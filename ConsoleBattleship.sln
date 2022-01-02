@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleBattleship", "ConsoleBattleship\ConsoleBattleship.csproj", "{31E56D1B-29D9-4EBB-8573-1E361B91EEA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleshipEngine", "BattleshipEngine\BattleshipEngine.csproj", "{0A71370A-746D-4320-9D23-71D66340B2DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BattleshipTest", "BattleshipTest\BattleshipTest.csproj", "{9A79EC18-57CC-4399-B526-C2EF425272CC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{31E56D1B-29D9-4EBB-8573-1E361B91EEA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31E56D1B-29D9-4EBB-8573-1E361B91EEA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31E56D1B-29D9-4EBB-8573-1E361B91EEA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31E56D1B-29D9-4EBB-8573-1E361B91EEA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A71370A-746D-4320-9D23-71D66340B2DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A71370A-746D-4320-9D23-71D66340B2DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A71370A-746D-4320-9D23-71D66340B2DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A71370A-746D-4320-9D23-71D66340B2DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A79EC18-57CC-4399-B526-C2EF425272CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A79EC18-57CC-4399-B526-C2EF425272CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A79EC18-57CC-4399-B526-C2EF425272CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A79EC18-57CC-4399-B526-C2EF425272CC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
