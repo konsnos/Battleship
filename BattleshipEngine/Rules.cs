@@ -4,23 +4,33 @@ public struct Rules
 {
     public int ColumnsSize { get; private set; }
     public int RowsSize { get; private set; }
-    public Dictionary<Ship, int> shipsInMap;
+    public List<Ship> shipsInMap { get; private set; }
 
-    public Rules() : this(10, 10, new Dictionary<Ship, int>()
+    public Rules()
     {
-        { new Ship("Carrier", 5), 1 },
-        { new Ship("BattleshipEngine", 4), 1 },
-        { new Ship("Destroyer", 3), 1 },
-        { new Ship("Submarine", 3), 2 },
-        { new Ship("Patrol Boat", 2), 2 }
-    })
-    {
+        ColumnsSize = 10;
+        RowsSize = 10;
+        shipsInMap = new List<Ship>();
+        
+        AddShip("Carrier", 5, 1);
+        AddShip("Battleship", 4, 1);
+        AddShip("Destroyer", 3, 1);
+        AddShip("Submarine", 3, 2);
+        AddShip("Patrol Boat", 2, 2);
     }
 
-    public Rules(int newColumnsSize, int newRowsSize, Dictionary<Ship, int> newShipsInMap)
+    public Rules(int newColumnsSize, int newRowsSize)
     {
         ColumnsSize = newColumnsSize;
         RowsSize = newRowsSize;
-        shipsInMap = newShipsInMap;
+        shipsInMap = new List<Ship>();
+    }
+
+    public void AddShip(string shipName, int size, int amount)
+    {
+        for (int i = 0; i < amount; i++)
+        {
+            shipsInMap.Add(new Ship(shipName, size, shipsInMap.Count));
+        }
     }
 }

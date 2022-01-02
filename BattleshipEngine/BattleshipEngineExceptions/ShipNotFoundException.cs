@@ -2,12 +2,10 @@ namespace BattleshipEngine.BattleshipEngineExceptions;
 
 public class ShipNotFoundException : Exception
 {
-    public string ShipName { get; private set; }
-    public int Index { get; private set; }
+    public Ship Ship { private set; get; }
     
-    public ShipNotFoundException(string newShipName, int newIndex) :base($"Ship {newShipName} number {newIndex} not found in rules")
+    public ShipNotFoundException(Ship newShip) :base($"Ship {newShip.Name} not found in rules")
     {
-        ShipName = newShipName;
-        Index = newIndex;
+        Ship = newShip;
     }
 }

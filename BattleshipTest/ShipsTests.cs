@@ -7,12 +7,13 @@ namespace BattleshipTest;
 
 public class ShipsTests
 {
+    private Rules rules;
     private IShipsMap shipsMap;
 
     [SetUp]
     public void Setup()
     {
-        var rules = new Rules();
+        rules = new Rules();
 
         shipsMap = new Map(rules);
     }
@@ -20,7 +21,8 @@ public class ShipsTests
     [Test]
     public void TestAddSuccess()
     {
-        shipsMap.PositionShip("Carrier", 0, new MapCoordinates(0, 0), true);
+        var ship = rules.shipsInMap[0];
+        shipsMap.PositionShip(ship, new MapCoordinates(0, 0), true);
 
         Assert.Pass();
     }
@@ -28,33 +30,37 @@ public class ShipsTests
     [Test]
     public void TestNotExistingShip()
     {
+        var newShip = new Ship("Frigate", 3, 0);
         Assert.Throws<ShipNotFoundException>(() =>
         {
-            shipsMap.PositionShip("Frigate", 0, new MapCoordinates(), true);
+            shipsMap.PositionShip(newShip, new MapCoordinates(), true);
         });
     }
 
     [Test]
     public void TestAddOutOfMap()
     {
-        Assert.Throws<OutOfMapException>(() => { shipsMap.PositionShip("Carrier", 0, new MapCoordinates(6, 0), true); });
+        var ship = rules.shipsInMap[0];
+        Assert.Throws<OutOfMapException>(() => { shipsMap.PositionShip(ship, new MapCoordinates(6, 0), true); });
         
-        Assert.Throws<OutOfMapException>(() => { shipsMap.PositionShip("Carrier", 0, new MapCoordinates(0, 6), false); });
+        Assert.Throws<OutOfMapException>(() => { shipsMap.PositionShip(ship, new MapCoordinates(0, 6), false); });
         
-        Assert.Throws<OutOfMapException>(() => { shipsMap.PositionShip("Carrier", 0, new MapCoordinates(9, 7), true); });
+        Assert.Throws<OutOfMapException>(() => { shipsMap.PositionShip(ship, new MapCoordinates(9, 7), true); });
     }
 
     [Test]
     public void TestShipOverlapping()
     {
-        shipsMap.PositionShip("Carrier", 0, new MapCoordinates(), true);
+        var carrier = rules.shipsInMap[0];
+        shipsMap.PositionShip(carrier, new MapCoordinates(), true);
         // Check reposition
-        shipsMap.PositionShip("Carrier", 0, new MapCoordinates(1, 0), true);
+        shipsMap.PositionShip(carrier, new MapCoordinates(1, 0), true);
         Assert.Pass();
-        
+
+        var battleship = rules.shipsInMap[1];
         Assert.Throws<OccupiedTileException>(() =>
         {
-            shipsMap.PositionShip("Battleship", 0, new MapCoordinates(2, 0), true);
+            shipsMap.PositionShip(battleship, new MapCoordinates(2, 0), true);
         });
     }
 }

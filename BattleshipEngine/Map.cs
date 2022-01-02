@@ -7,68 +7,48 @@ public class Map : IShipsMap
 {
     private Rules rules;
     private List<ShipLocation> shipLocations;
-    private List<MapCoordinates> occupiedTiles;
+    private HashSet<MapCoordinates> occupiedTiles;
+    
+    private HashSet<MapCoordinates> firedTiles;
+    private HashSet<Ship> shipsWrecked;
 
     public Map(Rules newRules)
     {
         rules = newRules;
         shipLocations = new List<ShipLocation>(rules.shipsInMap.Count);
-        occupiedTiles = new List<MapCoordinates>();
+        occupiedTiles = new HashSet<MapCoordinates>();
+        
+        firedTiles = new HashSet<MapCoordinates>();
+        shipsWrecked = new HashSet<Ship>();
     }
 
-    public void PositionShip(string shipName, int index, MapCoordinates newCoordinates, bool isHorizontal)
+    #region IShipsMap
+    public void PositionShip(Ship newShip, MapCoordinates newCoordinates, bool isHorizontal)
     {
-        bool found = GetShip(shipName, index, out var ship);
-
-        if (!found)
-        {
-            throw new ShipNotFoundException(shipName, index);
-        }
-
-        var coordinates = MapCoordinates.GetAllCoordinates(newCoordinates, isHorizontal, ship.Size);
+        if (!rules.shipsInMap.Contains(newShip))
+            throw new ShipNotFoundException(newShip);
+        
+        var coordinates = MapCoordinates.GetAllCoordinates(newCoordinates, isHorizontal, newShip.Size);
         if (!IsCoordinatesInsideMap(coordinates))
         {
-            throw new OutOfMapException(newCoordinates, isHorizontal, ship.Size);
+            throw new OutOfMapException(newCoordinates, isHorizontal, newShip.Size);
         }
 
-        bool isShipPositioned = IsShipPositioned(shipName, index, out ShipLocation newShipLocation);
+        bool isShipPositioned = IsShipPositioned(newShip, out ShipLocation newShipLocation);
         if (isShipPositioned)
             RemoveShip(newShipLocation);
         
         if (!IsCoordinatesFree(coordinates))
         {
             AddShip(newShipLocation);
-            throw new OccupiedTileException(newCoordinates, isHorizontal, ship.Size);
+            throw new OccupiedTileException(newCoordinates, isHorizontal, newShip.Size);
         }
 
-        if (isShipPositioned)
-        {
-            newShipLocation.ChangeLocation(newCoordinates, isHorizontal);
-        }
-        else
-        {
-            newShipLocation = new ShipLocation(ship, newCoordinates, isHorizontal);
-        }
+        newShipLocation.ChangeLocation(newCoordinates, isHorizontal);
 
         AddShip(newShipLocation);
     }
-
-    private void RemoveShip(ShipLocation shipLocation)
-    {
-        foreach (var coordinates in shipLocation.GetCoordinatesFromShipLocation())
-        {
-            occupiedTiles.Remove(coordinates);
-        }
-
-        shipLocations.Remove(shipLocation);
-    }
-
-    private void AddShip(ShipLocation shipLocation)
-    {
-        occupiedTiles.AddRange(shipLocation.GetCoordinatesFromShipLocation());
-        shipLocations.Add(shipLocation);
-    }
-
+    
     public bool IsCoordinatesInsideMap(MapCoordinates[] coordinatesArray)
     {
         foreach (var coordinates in coordinatesArray)
@@ -94,45 +74,70 @@ public class Map : IShipsMap
 
         return true;
     }
+    #endregion
 
-    public bool IsShipPositioned(string shipName, int index, out ShipLocation positionedShip)
+    private void RemoveShip(ShipLocation shipLocation)
     {
-        int foundIndex = 0;
-        foreach (var shipLocation in shipLocations)
+        foreach (var coordinates in shipLocation.GetCoordinatesFromShipLocation())
         {
-            if (!shipName.Equals(shipLocation.Ship.Name)) continue;
-
-            if (foundIndex == index)
-            {
-                positionedShip = shipLocation;
-                return true;
-            }
-            
-            foundIndex++;
+            occupiedTiles.Remove(coordinates);
         }
 
-        positionedShip = new ShipLocation();
+        shipLocations.Remove(shipLocation);
+    }
+
+    private void AddShip(ShipLocation shipLocation)
+    {
+        var coordinatesToAdd = shipLocation.GetCoordinatesFromShipLocation();
+        foreach (var coordinateToAdd in coordinatesToAdd)
+        {
+            occupiedTiles.Add(coordinateToAdd);
+        }
+        shipLocations.Add(shipLocation);
+    }
+
+    public bool IsShipPositioned(Ship ship, out ShipLocation positionedShip)
+    {
+        foreach (var shipLocation in shipLocations)
+        {
+            if (!ship.Equals(shipLocation.Ship)) continue;
+
+            positionedShip = shipLocation;
+            return true;
+        }
+
+        positionedShip = new ShipLocation(ship, new MapCoordinates(), true);
         return false;
     }
 
-    private bool GetShip(string shipName, int index, out Ship ship)
+    public bool IsCoordinatesFiredAt(MapCoordinates fireCoordinates)
     {
-        int shipIndex = 0;
-        foreach (var keyValuePair in rules.shipsInMap)
-        {
-            ship = keyValuePair.Key;
-            if (!shipName.Equals(ship.Name)) continue;
-            
-            for (int i = 0; i < keyValuePair.Value; i++)
-            {
-                if (shipIndex == index)
-                    return true;
+        return firedTiles.Contains(fireCoordinates);
+    }
 
-                shipIndex++;
+    public bool FireToCoordinates(MapCoordinates fireCoordinates, out ShipHitInfo shipHitInfo)
+    {
+        firedTiles.Add(fireCoordinates);
+        foreach (var shipLocation in shipLocations)
+        {
+            if (!shipLocation.CheckIfTileIsOccupied(fireCoordinates)) continue;
+
+            var tilesOccupied = shipLocation.GetCoordinatesFromShipLocation();
+            bool isShipWrecked = true;
+            foreach (var tile in tilesOccupied)
+            {
+                if (!firedTiles.Contains(tile))
+                {
+                    isShipWrecked = false;
+                    break;
+                }
             }
+
+            shipHitInfo = new ShipHitInfo(shipLocation.Ship, fireCoordinates, isShipWrecked);
+            return true;
         }
 
-        ship = new Ship();
+        shipHitInfo = new ShipHitInfo();
         return false;
     }
 

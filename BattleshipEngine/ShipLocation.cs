@@ -23,4 +23,10 @@ public struct ShipLocation
     {
         return MapCoordinates.GetAllCoordinates(StartingTile, IsHorizontal, Ship.Size);
     }
+
+    public bool CheckIfTileIsOccupied(MapCoordinates coordinateToCheck)
+    {
+        var occupiedCoordinates = GetCoordinatesFromShipLocation();
+        return occupiedCoordinates.Any(coordinateToCheck.Equals);
+    }
 }
