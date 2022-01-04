@@ -3,19 +3,24 @@ using BattleshipEngine.Interfaces;
 
 namespace BattleshipEngine;
 
-public class Map : IShipsMap
+public class Map : IShipsMap, ITargetMap
 {
     private Rules rules;
-    private List<ShipLocation> shipLocations;
+    public IEnumerable<Ship> ShipsInMap => rules.shipsInMap;
+
+    private HashSet<ShipLocation> shipLocations;
     private HashSet<MapCoordinates> occupiedTiles;
     
     private HashSet<MapCoordinates> firedTiles;
     private HashSet<Ship> shipsWrecked;
 
+    private static readonly Random random = new Random();
+    private static bool randomBool => random.Next(2) > 0;
+
     public Map(Rules newRules)
     {
         rules = newRules;
-        shipLocations = new List<ShipLocation>(rules.shipsInMap.Count);
+        shipLocations = new HashSet<ShipLocation>(rules.shipsInMap.Count);
         occupiedTiles = new HashSet<MapCoordinates>();
         
         firedTiles = new HashSet<MapCoordinates>();
@@ -23,30 +28,52 @@ public class Map : IShipsMap
     }
 
     #region IShipsMap
-    public void PositionShip(Ship newShip, MapCoordinates newCoordinates, bool isHorizontal)
+    public void PositionShipInRandomCoordinatesUnsafe(ShipLocation newShipLocation)
     {
+        bool isInsideMap = false;
+        bool isPositionFree = false;
+
+        while (!isInsideMap || !isPositionFree)
+        {
+            var coordinates = rules.GetRandomCoordinates();
+            newShipLocation.ChangeLocation(coordinates, randomBool);
+            var shipCoordinates = newShipLocation.GetCoordinatesFromShipLocation();
+            isInsideMap = IsCoordinatesInsideMap(shipCoordinates);
+            isPositionFree = IsCoordinatesFree(shipCoordinates);
+        }
+        
+        PositionShip(newShipLocation);
+    }
+    
+    public void PositionShip(ShipLocation shipLocation)
+    {
+        Ship newShip = shipLocation.Ship;
+        
         if (!rules.shipsInMap.Contains(newShip))
             throw new ShipNotFoundException(newShip);
-        
-        var coordinates = MapCoordinates.GetAllCoordinates(newCoordinates, isHorizontal, newShip.Size);
+
+        var newCoordinates = shipLocation.StartingTile;
+        var newIsHorizontal = shipLocation.IsHorizontal;
+        var coordinates = MapCoordinates.GetAllCoordinates(newCoordinates, newIsHorizontal, newShip.Size);
         if (!IsCoordinatesInsideMap(coordinates))
         {
-            throw new OutOfMapException(newCoordinates, isHorizontal, newShip.Size);
+            throw new OutOfMapException(newCoordinates, newIsHorizontal, newShip.Size);
         }
 
-        bool isShipPositioned = IsShipPositioned(newShip, out ShipLocation newShipLocation);
+        bool isShipPositioned = IsShipPositioned(newShip, out var shipLocationToAdd);
         if (isShipPositioned)
-            RemoveShip(newShipLocation);
+            RemoveShip(shipLocationToAdd);
         
         if (!IsCoordinatesFree(coordinates))
         {
-            AddShip(newShipLocation);
-            throw new OccupiedTileException(newCoordinates, isHorizontal, newShip.Size);
+            if(isShipPositioned)
+                AddShip(shipLocationToAdd);
+            throw new OccupiedTileException(newCoordinates, newIsHorizontal, newShip.Size);
         }
 
-        newShipLocation.ChangeLocation(newCoordinates, isHorizontal);
+        shipLocationToAdd.ChangeLocation(newCoordinates, newIsHorizontal);
 
-        AddShip(newShipLocation);
+        AddShip(shipLocationToAdd);
     }
     
     public bool IsCoordinatesInsideMap(MapCoordinates[] coordinatesArray)
@@ -74,16 +101,38 @@ public class Map : IShipsMap
 
         return true;
     }
+
+    public bool IsShipPositioned(Ship ship, out ShipLocation positionedShip)
+    {
+        foreach (var shipLocation in shipLocations)
+        {
+            if (!ship.Equals(shipLocation.Ship)) continue;
+
+            positionedShip = new ShipLocation(shipLocation);
+            return true;
+        }
+
+        positionedShip = new ShipLocation(ship);
+        return false;
+    }
     #endregion
 
-    private void RemoveShip(ShipLocation shipLocation)
+    private void RemoveShip(ShipLocation removeShipLocation)
     {
-        foreach (var coordinates in shipLocation.GetCoordinatesFromShipLocation())
+        foreach (var coordinates in removeShipLocation.GetCoordinatesFromShipLocation())
         {
             occupiedTiles.Remove(coordinates);
         }
 
-        shipLocations.Remove(shipLocation);
+        var removeShip = removeShipLocation.Ship;
+
+        foreach (var shipLocation in shipLocations)
+        {
+            if (!removeShip.Equals(shipLocation.Ship)) continue;
+            
+            shipLocations.Remove(shipLocation);
+            break;
+        }
     }
 
     private void AddShip(ShipLocation shipLocation)
@@ -96,20 +145,7 @@ public class Map : IShipsMap
         shipLocations.Add(shipLocation);
     }
 
-    public bool IsShipPositioned(Ship ship, out ShipLocation positionedShip)
-    {
-        foreach (var shipLocation in shipLocations)
-        {
-            if (!ship.Equals(shipLocation.Ship)) continue;
-
-            positionedShip = shipLocation;
-            return true;
-        }
-
-        positionedShip = new ShipLocation(ship, new MapCoordinates(), true);
-        return false;
-    }
-
+    #region ITargetMap
     public bool IsCoordinatesFiredAt(MapCoordinates fireCoordinates)
     {
         return firedTiles.Contains(fireCoordinates);
@@ -134,12 +170,14 @@ public class Map : IShipsMap
             }
 
             shipHitInfo = new ShipHitInfo(shipLocation.Ship, fireCoordinates, isShipWrecked);
+            shipsWrecked.Add(shipLocation.Ship);
             return true;
         }
 
         shipHitInfo = new ShipHitInfo();
         return false;
     }
+    #endregion
 
     public char[,] GetMapForPrint()
     {

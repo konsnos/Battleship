@@ -6,6 +6,8 @@ public struct Rules
     public int RowsSize { get; private set; }
     public List<Ship> shipsInMap { get; private set; }
 
+    private Random random = new Random();
+
     public Rules()
     {
         ColumnsSize = 10;
@@ -32,5 +34,10 @@ public struct Rules
         {
             shipsInMap.Add(new Ship(shipName, size, shipsInMap.Count));
         }
+    }
+
+    public MapCoordinates GetRandomCoordinates()
+    {
+        return new MapCoordinates(random.Next(ColumnsSize), random.Next(RowsSize));
     }
 }

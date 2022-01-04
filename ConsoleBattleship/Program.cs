@@ -17,6 +17,8 @@ AddShips(map);
 var mapToPrint = map.GetMapForPrint();
 PrintMap(mapToPrint);
 
+TestFire(map);
+
 // End
 Console.WriteLine("Finished");
 
@@ -24,33 +26,43 @@ void AddShips(IShipsMap shipsMap)
 {
     Console.WriteLine("Adding ships...");
 
-    foreach (var shipInMap in rules.shipsInMap)
+    foreach (var shipInMap in shipsMap.ShipsInMap)
     {
-        var ship = shipInMap;
-
-        bool isInsideMap = false;
-        bool canBePositioned = false;
-        var shipLocation = new ShipLocation(ship, new MapCoordinates(), true);
-        while (!isInsideMap || !canBePositioned)
-        {
-            GetRandomPosition(ship, ref shipLocation);
-            var shipCoordinates = shipLocation.GetCoordinatesFromShipLocation();
-            isInsideMap = shipsMap.IsCoordinatesInsideMap(shipCoordinates);
-            canBePositioned = shipsMap.IsCoordinatesFree(shipCoordinates);
-        }
-
-        shipsMap.PositionShip(ship, shipLocation.StartingTile, shipLocation.IsHorizontal);
+        shipsMap.PositionShipInRandomCoordinatesUnsafe(new ShipLocation(shipInMap));
     }
 
     Console.WriteLine("Added ships");
     Console.WriteLine();
 }
 
-void GetRandomPosition(Ship ship, ref ShipLocation shipLocation)
+void TestFire(ITargetMap fireMap)
 {
+    StringBuilder sb = new StringBuilder();
+    sb.AppendLine("Fire solution");
     Random r = new Random();
-    var mapCoordinates = new MapCoordinates(r.Next(rules.ColumnsSize), r.Next(rules.RowsSize));
-    shipLocation.ChangeLocation(mapCoordinates, r.Next(2) > 0);
+    int fireRounds = 50;
+    for (int i = 0; i < fireRounds; i++)
+    {
+        MapCoordinates mapCoordinates = new MapCoordinates();
+        bool isFiredAt = true;
+        while (isFiredAt)
+        {
+            mapCoordinates = new MapCoordinates(r.Next(rules.ColumnsSize), r.Next(rules.RowsSize));
+            isFiredAt = map.IsCoordinatesFiredAt(mapCoordinates);
+        }
+
+        bool hit = map.FireToCoordinates(mapCoordinates, out ShipHitInfo shipHitInfo);
+
+        sb.Append($"Fired at {mapCoordinates} and hit {hit}.");
+        if (hit)
+        {
+            sb.Append($" Hit info: {shipHitInfo.Ship.Name}:{shipHitInfo.Ship.Id}.");
+            sb.Append($" Wrecked {shipHitInfo.IsShipWrecked}.");
+        }
+        sb.AppendLine();
+    }
+    
+    Console.WriteLine(sb);
 }
 
 void PrintMap(char[,] mapChars)
