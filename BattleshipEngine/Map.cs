@@ -13,6 +13,8 @@ public class Map : IShipsMap, ITargetMap
     
     private HashSet<MapCoordinates> firedTiles;
     private HashSet<Ship> shipsWrecked;
+    public IEnumerable<Ship> ShipsWrecked => shipsWrecked;
+    public int ShipsRemaining => ShipsInMap.Count() - shipsWrecked.Count;
 
     private static readonly Random random = new Random();
     private static bool randomBool => random.Next(2) > 0;

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using BattleshipEngine;
 using BattleshipEngine.Interfaces;
 using NUnit.Framework;
@@ -70,6 +71,31 @@ public class FireTests
             }
         }
     }
-    
-    //todo: test ship wreck
+
+    [Test]
+    public void TestFireToShips()
+    {
+        int shipsWrecked = 0;
+        foreach (var shipLocation in shipLocations)
+        {
+            var shipCoordinates = shipLocation.GetCoordinatesFromShipLocation();
+
+            ShipHitInfo shipHitInfo = new ShipHitInfo();
+            foreach (var shipCoordinate in shipCoordinates)
+            {
+                var isHit = targetMap.FireToCoordinates(shipCoordinate, out shipHitInfo);
+
+                Assert.IsTrue(isHit);
+            }
+
+            Assert.IsTrue(shipHitInfo.IsShipWrecked);
+            shipsWrecked++;
+
+            Assert.AreEqual(shipsWrecked, targetMap.ShipsWrecked.Count());
+            Assert.AreEqual(shipLocations.Count - shipsWrecked, targetMap.ShipsRemaining);
+        }
+
+        Assert.AreEqual(shipLocations.Count, shipsWrecked);
+        Assert.AreEqual(0, targetMap.ShipsRemaining);
+    }
 }
