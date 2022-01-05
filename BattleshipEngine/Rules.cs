@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace BattleshipEngine;
 
 public struct Rules
@@ -39,5 +41,12 @@ public struct Rules
     public MapCoordinates GetRandomCoordinates()
     {
         return new MapCoordinates(random.Next(ColumnsSize), random.Next(RowsSize));
+    }
+
+    public MapCoordinates GetRandomPositionForShip(bool isHorizontal, int size)
+    {
+        int columnSize = isHorizontal ? ColumnsSize - size : ColumnsSize;
+        int rowSize = isHorizontal ? RowsSize : RowsSize - size;
+        return new MapCoordinates(random.Next(columnSize), random.Next(rowSize));
     }
 }

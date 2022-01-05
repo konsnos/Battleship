@@ -39,8 +39,9 @@ public class Map : IShipsMap, ITargetMap
 
         while (!isInsideMap || !isPositionFree)
         {
-            var coordinates = rules.GetRandomCoordinates();
-            newShipLocation.ChangeLocation(coordinates, randomBool);
+            bool isHorizontal = randomBool;
+            var coordinates = rules.GetRandomPositionForShip(isHorizontal, ship.Size);
+            newShipLocation.ChangeLocation(coordinates, isHorizontal);
             var shipCoordinates = newShipLocation.GetCoordinatesFromShipLocation();
             isInsideMap = IsCoordinatesInsideMap(shipCoordinates);
             isPositionFree = IsCoordinatesFree(shipCoordinates);
