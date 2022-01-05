@@ -28,10 +28,12 @@ public class Map : IShipsMap, ITargetMap
     }
 
     #region IShipsMap
-    public void PositionShipInRandomCoordinatesUnsafe(ShipLocation newShipLocation)
+    public ShipLocation PositionShipInRandomCoordinatesUnsafe(Ship ship)
     {
         bool isInsideMap = false;
         bool isPositionFree = false;
+
+        ShipLocation newShipLocation = new ShipLocation(ship);
 
         while (!isInsideMap || !isPositionFree)
         {
@@ -43,6 +45,8 @@ public class Map : IShipsMap, ITargetMap
         }
         
         PositionShip(newShipLocation);
+
+        return new ShipLocation(newShipLocation);
     }
     
     public void PositionShip(ShipLocation shipLocation)
@@ -182,11 +186,11 @@ public class Map : IShipsMap, ITargetMap
     public char[,] GetMapForPrint()
     {
         char[,] map = new char[rules.RowsSize, rules.ColumnsSize];
-        for (int i = 0; i < map.GetLength(0); i++)
+        for (int r = 0; r < map.GetLength(0); r++) // rows
         {
-            for (int j = 0; j < map.GetLength(1); j++)
+            for (int c = 0; c < map.GetLength(1); c++) // columns
             {
-                map[i, j] = 'O';
+                map[r, c] = 'O';
             }
         }
 

@@ -28,7 +28,7 @@ void AddShips(IShipsMap shipsMap)
 
     foreach (var shipInMap in shipsMap.ShipsInMap)
     {
-        shipsMap.PositionShipInRandomCoordinatesUnsafe(new ShipLocation(shipInMap));
+        shipsMap.PositionShipInRandomCoordinatesUnsafe(shipInMap);
     }
 
     Console.WriteLine("Added ships");
@@ -68,13 +68,13 @@ void TestFire(ITargetMap fireMap)
 void PrintMap(char[,] mapChars)
 {
     Console.WriteLine("Map");
-    for (int i = 0; i < mapChars.GetLength(0); i++)
+    for (int r = 0; r < mapChars.GetLength(0); r++)
     {
         var sb = new StringBuilder();
 
-        for (int j = 0; j < mapChars.GetLength(1); j++)
+        for (int c = 0; c < mapChars.GetLength(1); c++)
         {
-            sb.Append(mapChars[i, j]);
+            sb.Append(mapChars[r, c]);
         }
 
         Console.WriteLine(sb);
