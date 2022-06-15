@@ -1,4 +1,5 @@
 using BattleshipEngine.BattleshipEngineExceptions;
+using BattleshipEngine.Interfaces;
 using BattleshipEngine.Maps;
 using BattleshipEngine.Players;
 
@@ -13,7 +14,6 @@ public class BattleshipSession
         _aiPlayers.Select(kvp => kvp.Key).Concat(_humanPlayers.Select(kvp => kvp.Key));
 
     private Dictionary<string, Map> _maps;
-    public IReadOnlyDictionary<string, Map> Maps => _maps; //todo: check if this can be modified
     private Rules _rules;
     private string[] _playerOrder;
 
@@ -125,6 +125,16 @@ public class BattleshipSession
         }
 
         SessionState = SessionState.Ready;
+    }
+
+    public ITargetMap GetTargetMap(string playerName)
+    {
+        if (_maps.TryGetValue(playerName, out Map map))
+        {
+            return map;
+        }
+
+        throw new Exception($"Player {playerName} isn't included in maps");
     }
 
     public void Start()

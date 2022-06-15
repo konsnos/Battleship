@@ -6,14 +6,15 @@ using BattleshipEngine.Players.Strategies;
 
 Console.WriteLine("Setting up session");
 
-var rules = new Rules();
+var rules = new Rules(4, 4);
+rules.AddShip("Cruiser", 3, 2);
 
 BattleshipSession battleshipSession = new BattleshipSession(rules);
 
 AIPlayer aiPlayer = new AIPlayer("Random Strategy", new RandomStrategy());
-AIPlayer humanPlayer = new AIPlayer("Konstantinos", new RandomStrategy());
+HumanPlayer humanPlayer = new HumanPlayer("Konstantinos");
 
-battleshipSession.SetPlayers(new[] { aiPlayer, humanPlayer }, Array.Empty<HumanPlayer>(), new[] { aiPlayer.Name, humanPlayer.Name });
+battleshipSession.SetPlayers(new[] { aiPlayer }, new[] { humanPlayer }, new[] { aiPlayer.Name, humanPlayer.Name });
 Console.WriteLine("Players set");
 
 Map map = new Map(rules);
@@ -43,12 +44,39 @@ while (battleshipSession.SessionState == SessionState.WaitingForPlayerTurn)
     {
         // Console.WriteLine($"Playing {battleshipSession.CurrentPlayer.Name}");
         battleshipSession.PlayAITurn();
-        
     }
     else
     {
-        //todo: implement player input
-        Console.WriteLine("Not implemented human input");
+        var enemyMap = battleshipSession.GetTargetMap(aiPlayer.Name);
+        
+        PrintMap(enemyMap.GetFiredCoordinatesForPrint());
+
+        MapCoordinates fireCoordinates = new MapCoordinates();
+        bool foundCoordinates = false;
+        do
+        {
+            Console.Write($"Player {battleshipSession.CurrentPlayer.Name} set fire coordinates (row, column): ");
+            string input = Console.ReadLine();
+
+            string[] inputs = input.Split(" ");
+            if (inputs.Length < 2)
+                continue;
+            bool success = int.TryParse(inputs[0], out int row);
+            if (!success)
+                continue;
+
+            success = int.TryParse(inputs[1], out int column);
+            if (!success)
+                continue;
+
+            fireCoordinates = new MapCoordinates(column, row);
+            bool firedAt = enemyMap.AreCoordinatesFiredAt(fireCoordinates);
+            if (firedAt)
+                continue;
+            foundCoordinates = true;
+        } while (!foundCoordinates);
+        
+        battleshipSession.PlayHumanTurn(aiPlayer, fireCoordinates);
     }
 }
 
@@ -56,10 +84,11 @@ Console.WriteLine("Program ended...");
 
 void OnPlayerTurnResultExecuted(PlayerTurnResult playerTurnResult)
 {
+    Console.WriteLine($"Player {playerTurnResult.PlayerAction.Player.Name} attacked to {playerTurnResult.PlayerAction.EnemyPlayer.Name} at {playerTurnResult.PlayerAction.FireCoordinates}");
+
     if (playerTurnResult.ShipHitInfo.IsShipWrecked)
     {
-        Console.WriteLine($"Player {playerTurnResult.PlayerAction.Player.Name} turn {battleshipSession.CurrentTurn} wrecked ship of {playerTurnResult.PlayerAction.EnemyPlayer.Name} at {playerTurnResult.PlayerAction.FireCoordinates}");
-        // Console.WriteLine($"Hit {playerTurnResult.Hit}, ship wrecked {playerTurnResult.ShipHitInfo.IsShipWrecked}");
+        Console.WriteLine($"Hit {playerTurnResult.Hit}, ship wrecked {playerTurnResult.ShipHitInfo.IsShipWrecked}");
     }
 }
 

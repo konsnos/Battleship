@@ -27,7 +27,7 @@ public struct Rules
         RowsSize = newRowsSize;
         ShipsInMap = new List<Ship>();
     }
-
+    
     public void AddShip(string shipName, int size, int amount)
     {
         for (int i = 0; i < amount; i++)
