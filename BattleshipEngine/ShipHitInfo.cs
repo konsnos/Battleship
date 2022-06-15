@@ -1,3 +1,5 @@
+using BattleshipEngine.Maps;
+
 namespace BattleshipEngine;
 
 public struct ShipHitInfo

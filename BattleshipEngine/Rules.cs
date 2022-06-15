@@ -4,15 +4,15 @@ public struct Rules
 {
     public int ColumnsSize { get; private set; }
     public int RowsSize { get; private set; }
-    public List<Ship> shipsInMap { get; private set; }
+    public List<Ship> ShipsInMap { get; private set; }
 
-    private Random random = new Random();
+    private static readonly Random _random = new Random();
 
     public Rules()
     {
         ColumnsSize = 10;
         RowsSize = 10;
-        shipsInMap = new List<Ship>();
+        ShipsInMap = new List<Ship>();
         
         AddShip("Carrier", 5, 1);
         AddShip("Battleship", 4, 1);
@@ -25,26 +25,14 @@ public struct Rules
     {
         ColumnsSize = newColumnsSize;
         RowsSize = newRowsSize;
-        shipsInMap = new List<Ship>();
+        ShipsInMap = new List<Ship>();
     }
 
     public void AddShip(string shipName, int size, int amount)
     {
         for (int i = 0; i < amount; i++)
         {
-            shipsInMap.Add(new Ship(shipName, size, shipsInMap.Count));
+            ShipsInMap.Add(new Ship(shipName, size, ShipsInMap.Count));
         }
-    }
-
-    public MapCoordinates GetRandomCoordinates()
-    {
-        return new MapCoordinates(random.Next(ColumnsSize), random.Next(RowsSize));
-    }
-
-    public MapCoordinates GetRandomPositionForShip(bool isHorizontal, int size)
-    {
-        int columnSize = isHorizontal ? ColumnsSize - size : ColumnsSize;
-        int rowSize = isHorizontal ? RowsSize : RowsSize - size;
-        return new MapCoordinates(random.Next(columnSize), random.Next(rowSize));
     }
 }

@@ -1,66 +1,80 @@
 ﻿using System.Text;
 using BattleshipEngine;
-using BattleshipEngine.Interfaces;
+using BattleshipEngine.Maps;
+using BattleshipEngine.Players;
+using BattleshipEngine.Players.Strategies;
 
-Console.WriteLine("Generating ships map");
+Console.WriteLine("Setting up session");
 
 var rules = new Rules();
 
-var map = new Map(rules);
+BattleshipSession battleshipSession = new BattleshipSession(rules);
 
-Console.WriteLine("Generated ships map");
+AIPlayer aiPlayer = new AIPlayer("Random Strategy", new RandomStrategy());
+AIPlayer humanPlayer = new AIPlayer("Konstantinos", new RandomStrategy());
 
-AddShips(map);
+battleshipSession.SetPlayers(new[] { aiPlayer, humanPlayer }, Array.Empty<HumanPlayer>(), new[] { aiPlayer.Name, humanPlayer.Name });
+Console.WriteLine("Players set");
 
-var mapToPrint = map.GetMapForPrint();
-PrintMap(mapToPrint);
+Map map = new Map(rules);
 
-TestFire(map);
-
-// End
-Console.WriteLine("Finished");
-
-void AddShips(IShipsMap shipsMap)
+foreach (var ship in rules.ShipsInMap)
 {
-    Console.WriteLine("Adding ships...");
-
-    foreach (var shipInMap in shipsMap.ShipsInMap)
-    {
-        shipsMap.PositionShipInRandomCoordinatesUnsafe(shipInMap);
-    }
-
-    Console.WriteLine("Added ships");
-    Console.WriteLine();
+    map.PositionShipInRandomCoordinatesUnsafe(ship);
 }
 
-void TestFire(ITargetMap fireMap)
+var humanPlayerMaps = new Dictionary<string, Map>()
 {
-    StringBuilder sb = new StringBuilder();
-    sb.AppendLine("Fire solution");
-    Random r = new Random();
-    int fireRounds = 50;
-    for (int i = 0; i < fireRounds; i++)
+    { humanPlayer.Name, map }
+};
+
+battleshipSession.SetMaps(humanPlayerMaps);
+Console.WriteLine("Maps set");
+
+battleshipSession.OnPlayerTurnResultExecuted += OnPlayerTurnResultExecuted;
+battleshipSession.OnTurnChanged += OnTurnChanged;
+battleshipSession.OnSessionCompleted += OnSessionCompleted;
+Console.WriteLine("Starting...");
+battleshipSession.Start();
+
+while (battleshipSession.SessionState == SessionState.WaitingForPlayerTurn)
+{
+    if (battleshipSession.CurrentPlayer.IsAI)
     {
-        MapCoordinates mapCoordinates = new MapCoordinates();
-        bool isFiredAt = true;
-        while (isFiredAt)
-        {
-            mapCoordinates = new MapCoordinates(r.Next(rules.ColumnsSize), r.Next(rules.RowsSize));
-            isFiredAt = map.IsCoordinatesFiredAt(mapCoordinates);
-        }
-
-        bool hit = map.FireToCoordinates(mapCoordinates, out ShipHitInfo shipHitInfo);
-
-        sb.Append($"Fired at {mapCoordinates} and hit {hit}.");
-        if (hit)
-        {
-            sb.Append($" Hit info: {shipHitInfo.Ship.Name}:{shipHitInfo.Ship.Id}.");
-            sb.Append($" Wrecked {shipHitInfo.IsShipWrecked}.");
-        }
-        sb.AppendLine();
+        // Console.WriteLine($"Playing {battleshipSession.CurrentPlayer.Name}");
+        battleshipSession.PlayAITurn();
+        
     }
+    else
+    {
+        //todo: implement player input
+        Console.WriteLine("Not implemented human input");
+    }
+}
+
+Console.WriteLine("Program ended...");
+
+void OnPlayerTurnResultExecuted(PlayerTurnResult playerTurnResult)
+{
+    if (playerTurnResult.ShipHitInfo.IsShipWrecked)
+    {
+        Console.WriteLine($"Player {playerTurnResult.PlayerAction.Player.Name} turn {battleshipSession.CurrentTurn} wrecked ship of {playerTurnResult.PlayerAction.EnemyPlayer.Name} at {playerTurnResult.PlayerAction.FireCoordinates}");
+        // Console.WriteLine($"Hit {playerTurnResult.Hit}, ship wrecked {playerTurnResult.ShipHitInfo.IsShipWrecked}");
+    }
+}
+
+void OnTurnChanged(int turn)
+{
     
-    Console.WriteLine(sb);
+}
+
+void OnSessionCompleted(Player winner)
+{
+    battleshipSession.OnPlayerTurnResultExecuted -= OnPlayerTurnResultExecuted;
+    battleshipSession.OnTurnChanged -= OnTurnChanged;
+    battleshipSession.OnSessionCompleted -= OnSessionCompleted;
+    
+    Console.WriteLine($"Session completed. Winner {winner.Name}");
 }
 
 void PrintMap(char[,] mapChars)

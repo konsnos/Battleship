@@ -2,34 +2,35 @@ using System.Collections.Generic;
 using System.Linq;
 using BattleshipEngine;
 using BattleshipEngine.Interfaces;
+using BattleshipEngine.Maps;
 using NUnit.Framework;
 
 namespace BattleshipTest;
 
 public class FireTests
 {
-    private Rules rules;
-    private ITargetMap targetMap;
-    private List<ShipLocation> shipLocations;
+    private Rules _rules;
+    private ITargetMap _targetMap;
+    private List<ShipLocation> _shipLocations;
 
     [SetUp]
     public void Setup()
     {
-        rules = new Rules();
-        shipLocations = new List<ShipLocation>(rules.shipsInMap.Count);
+        _rules = new Rules();
+        _shipLocations = new List<ShipLocation>(_rules.ShipsInMap.Count);
 
-        Map map = new Map(rules);
+        Map map = new Map(_rules);
 
-        AddShips(map);
+        AddShips(map, _rules);
 
-        targetMap = map;
+        _targetMap = map;
     }
 
-    private void AddShips(IShipsMap shipsMap)
+    private void AddShips(ICreateMap shipsMap, Rules rules)
     {
-        foreach (var shipInMap in shipsMap.ShipsInMap)
+        foreach (var shipInMap in rules.ShipsInMap)
         {
-            shipLocations.Add(shipsMap.PositionShipInRandomCoordinatesUnsafe(shipInMap));
+            _shipLocations.Add(shipsMap.PositionShipInRandomCoordinatesUnsafe(shipInMap));
         }
     }
 
@@ -37,9 +38,9 @@ public class FireTests
     public void TestFireSuccess()
     {
         var mapCoordinate = new MapCoordinates();
-        var isHit = targetMap.FireToCoordinates(mapCoordinate, out var shipHitInfo);
+        var isHit = _targetMap.FireToCoordinates(mapCoordinate, out var shipHitInfo);
 
-        var isFiredAt = targetMap.IsCoordinatesFiredAt(mapCoordinate);
+        var isFiredAt = _targetMap.AreCoordinatesFiredAt(mapCoordinate);
 
         Assert.IsTrue(isFiredAt);
     }
@@ -49,9 +50,9 @@ public class FireTests
     {
         HashSet<MapCoordinates> occupiedCoordinates = new HashSet<MapCoordinates>();
 
-        foreach (var shipLocation in shipLocations)
+        foreach (var shipLocation in _shipLocations)
         {
-            var shipMapCoordinates = shipLocation.GetCoordinatesFromShipLocation();
+            var shipMapCoordinates = shipLocation.OccupiedCoordinates;
             foreach (var shipMapCoordinate in shipMapCoordinates)
             {
                 occupiedCoordinates.Add(shipMapCoordinate);
@@ -59,14 +60,14 @@ public class FireTests
         }
 
         MapCoordinates freeMapCoordinate = new MapCoordinates();
-        for (int r = 0; r < rules.RowsSize; r++)
+        for (int r = 0; r < _rules.RowsSize; r++)
         {
-            for (int c = 0; c < rules.ColumnsSize; c++)
+            for (int c = 0; c < _rules.ColumnsSize; c++)
             {
                 freeMapCoordinate = new MapCoordinates(c, r);
                 if (occupiedCoordinates.Contains(freeMapCoordinate)) continue;
                 
-                var isHit = targetMap.FireToCoordinates(freeMapCoordinate, out var shipHitInfo);
+                var isHit = _targetMap.FireToCoordinates(freeMapCoordinate, out var shipHitInfo);
                 Assert.IsFalse(isHit);
             }
         }
@@ -76,14 +77,14 @@ public class FireTests
     public void TestFireToShips()
     {
         int shipsWrecked = 0;
-        foreach (var shipLocation in shipLocations)
+        foreach (var shipLocation in _shipLocations)
         {
-            var shipCoordinates = shipLocation.GetCoordinatesFromShipLocation();
+            var shipCoordinates = shipLocation.OccupiedCoordinates;
 
             ShipHitInfo shipHitInfo = new ShipHitInfo();
             foreach (var shipCoordinate in shipCoordinates)
             {
-                var isHit = targetMap.FireToCoordinates(shipCoordinate, out shipHitInfo);
+                var isHit = _targetMap.FireToCoordinates(shipCoordinate, out shipHitInfo);
 
                 Assert.IsTrue(isHit);
             }
@@ -91,11 +92,11 @@ public class FireTests
             Assert.IsTrue(shipHitInfo.IsShipWrecked);
             shipsWrecked++;
 
-            Assert.AreEqual(shipsWrecked, targetMap.ShipsWrecked.Count());
-            Assert.AreEqual(shipLocations.Count - shipsWrecked, targetMap.ShipsRemaining);
+            Assert.AreEqual(shipsWrecked, _targetMap.ShipsWrecked.Count());
+            Assert.AreEqual(_shipLocations.Count - shipsWrecked, _targetMap.ShipsRemaining);
         }
 
-        Assert.AreEqual(shipLocations.Count, shipsWrecked);
-        Assert.AreEqual(0, targetMap.ShipsRemaining);
+        Assert.AreEqual(_shipLocations.Count, shipsWrecked);
+        Assert.AreEqual(0, _targetMap.ShipsRemaining);
     }
 }

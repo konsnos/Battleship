@@ -1,33 +1,33 @@
 using BattleshipEngine;
 using BattleshipEngine.BattleshipEngineExceptions;
-using BattleshipEngine.Interfaces;
+using BattleshipEngine.Maps;
 using NUnit.Framework;
 
 namespace BattleshipTest;
 
 public class ShipsTests
 {
-    private Rules rules;
-    private IShipsMap shipsMap;
+    private Rules _rules;
+    private Map _shipsMap;
 
     [SetUp]
     public void Setup()
     {
-        rules = new Rules();
+        _rules = new Rules();
 
-        shipsMap = new Map(rules);
+        _shipsMap = new Map(_rules);
     }
 
     [Test]
     public void TestAddSuccess()
     {
-        var ship = rules.shipsInMap[0];
+        var ship = _rules.ShipsInMap[0];
         var shipLocation = new ShipLocation(ship, new MapCoordinates(), true);
-        shipsMap.PositionShip(shipLocation);
+        _shipsMap.PositionShip(shipLocation);
 
         Assert.Pass();
 
-        var shipExists = shipsMap.IsShipPositioned(ship, out var existingShipLocation);
+        var shipExists = _shipsMap.IsShipPositioned(ship, out var existingShipLocation);
 
         Assert.IsTrue(shipExists);
     }
@@ -35,67 +35,81 @@ public class ShipsTests
     [Test]
     public void TestNotExistingShip()
     {
-        var newShip = new Ship("Frigate", 3, 0);
-        var shipLocation = new ShipLocation(newShip, new MapCoordinates(), true);
-        Assert.Throws<ShipNotFoundException>(() => { shipsMap.PositionShip(shipLocation); });
+        var ship = new Ship("Frigate", 3, 0);
+        var shipLocation = new ShipLocation(ship, new MapCoordinates(), true);
+        Assert.Throws<ShipNotFoundException>(() => { _shipsMap.PositionShip(shipLocation); });
     }
 
     [Test]
     public void TestAddOutOfMap()
     {
-        var ship = rules.shipsInMap[0];
+        var ship = _rules.ShipsInMap[0];
         Assert.Throws<OutOfMapException>(() =>
         {
-            shipsMap.PositionShip(new ShipLocation(ship, new MapCoordinates(6, 0), true));
+            _shipsMap.PositionShip(new ShipLocation(ship, new MapCoordinates(6, 0), true));
         });
 
         Assert.Throws<OutOfMapException>(() =>
         {
-            shipsMap.PositionShip(new ShipLocation(ship, new MapCoordinates(0, 6), false));
+            _shipsMap.PositionShip(new ShipLocation(ship, new MapCoordinates(0, 6), false));
         });
 
         Assert.Throws<OutOfMapException>(() =>
         {
-            shipsMap.PositionShip(new ShipLocation(ship, new MapCoordinates(9, 7), true));
+            _shipsMap.PositionShip(new ShipLocation(ship, new MapCoordinates(9, 7), true));
         });
     }
 
     [Test]
     public void TestShipOverlapping()
     {
-        var carrier = rules.shipsInMap[0];
+        var carrier = _rules.ShipsInMap[0];
         var carrierLocation = new ShipLocation(carrier, new MapCoordinates(), true);
-        shipsMap.PositionShip(carrierLocation);
+        _shipsMap.PositionShip(carrierLocation);
         // Check reposition
         carrierLocation.ChangeLocation(new MapCoordinates(1, 0), true);
-        shipsMap.PositionShip(carrierLocation);
+        _shipsMap.PositionShip(carrierLocation);
         Assert.Pass();
 
-        var battleship = rules.shipsInMap[1];
+        var battleship = _rules.ShipsInMap[1];
         var battleshipLocation = new ShipLocation(battleship, new MapCoordinates(2, 0), true);
         Assert.Throws<OccupiedTileException>(() =>
         {
-            shipsMap.PositionShip(battleshipLocation);
+            _shipsMap.PositionShip(battleshipLocation);
         });
     }
 
     [Test]
     public void TestShipReferenceIntegrity()
     {
-        var firstShip = rules.shipsInMap[0];
+        var firstShip = _rules.ShipsInMap[0];
         var shipLocation = new ShipLocation(firstShip, new MapCoordinates(), true);
-        shipsMap.PositionShip(shipLocation);
+        _shipsMap.PositionShip(shipLocation);
         shipLocation.ChangeLocation(new MapCoordinates(1, 1), false);
 
-        bool shipExists = shipsMap.IsShipPositioned(firstShip, out var existingShipLocation);
+        bool shipExists = _shipsMap.IsShipPositioned(firstShip, out var existingShipLocation);
 
         Assert.IsTrue(shipExists);
 
         Assert.AreEqual(new MapCoordinates(), existingShipLocation.StartingTile);
 
         existingShipLocation.ChangeLocation(new MapCoordinates(1, 1), false);
-        shipsMap.IsShipPositioned(firstShip, out var existingShipLocation2);
+        _shipsMap.IsShipPositioned(firstShip, out var existingShipLocation2);
         
         Assert.AreEqual(new MapCoordinates(), existingShipLocation2.StartingTile);
+    }
+
+    [Test]
+    public void TestOccupiedCoordinates()
+    {
+        var firstShip = _rules.ShipsInMap[0];
+        var shipLocation = new ShipLocation(firstShip, new MapCoordinates(), true);
+        _shipsMap.PositionShip(shipLocation);
+
+        foreach (var occupiedCoordinate in shipLocation.OccupiedCoordinates)
+        {
+            bool areFree = _shipsMap.AreCoordinatesFree(shipLocation.OccupiedCoordinates);
+            Assert.AreEqual(false, areFree);
+        }
     }
 }
