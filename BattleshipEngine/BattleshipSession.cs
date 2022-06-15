@@ -225,21 +225,18 @@ public class BattleshipSession
     public bool PlayHumanTurn(Player enemyPlayer, MapCoordinates fireCoords)
     {
         if (SessionState != SessionState.WaitingForPlayerTurn)
-        {
             return false;
-        }
         
         if (CurrentPlayer.IsAI)
-        {
             return false;
-        }
+
+        if (fireCoords.Column >= _rules.ColumnsSize || fireCoords.Row >= _rules.RowsSize)
+            return false;
 
         Map enemyMap = _maps[enemyPlayer.Name];
 
         if (enemyMap.AreCoordinatesFiredAt(fireCoords))
-        {
             return false;
-        }
 
         PlayerAction playerAction = new PlayerAction(CurrentPlayer, enemyPlayer, fireCoords);
         bool hit = enemyMap.FireToCoordinates(fireCoords, out ShipHitInfo shipHitInfo);

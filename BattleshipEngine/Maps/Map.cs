@@ -164,6 +164,12 @@ public class Map : ICreateMap, ITargetMap
 
     public bool FireToCoordinates(MapCoordinates fireCoordinates, out ShipHitInfo shipHitInfo)
     {
+        if (fireCoordinates.Row >= _rules.RowsSize || fireCoordinates.Column >= _rules.ColumnsSize)
+        {
+            shipHitInfo = new ShipHitInfo();
+            return false;
+        }
+        
         _firedTiles.Add(fireCoordinates);
         if (!_occupiedTiles.Contains(fireCoordinates))
         {
@@ -242,7 +248,7 @@ public class Map : ICreateMap, ITargetMap
     {
         char[,] map = GetMapForPrint();
         
-        const char firedCharacter = '0';
+        const char firedCharacter = 'H';
         const char wreckCharacter = 'X';
         foreach (var mapCoordinates in _firedTiles)
         {

@@ -49,23 +49,24 @@ while (battleshipSession.SessionState == SessionState.WaitingForPlayerTurn)
     {
         var enemyMap = battleshipSession.GetTargetMap(aiPlayer.Name);
         
+        Console.WriteLine($"{aiPlayer.Name} target map");
         PrintMap(enemyMap.GetFiredCoordinatesForPrint());
 
         MapCoordinates fireCoordinates = new MapCoordinates();
         bool foundCoordinates = false;
         do
         {
-            Console.Write($"Player {battleshipSession.CurrentPlayer.Name} set fire coordinates (row, column): ");
+            Console.Write($"Player {battleshipSession.CurrentPlayer.Name} set fire coordinates (column, row): ");
             string input = Console.ReadLine();
 
             string[] inputs = input.Split(" ");
             if (inputs.Length < 2)
                 continue;
-            bool success = int.TryParse(inputs[0], out int row);
+            bool success = int.TryParse(inputs[0], out int column);
             if (!success)
                 continue;
 
-            success = int.TryParse(inputs[1], out int column);
+            success = int.TryParse(inputs[1], out int row);
             if (!success)
                 continue;
 
@@ -108,7 +109,6 @@ void OnSessionCompleted(Player winner)
 
 void PrintMap(char[,] mapChars)
 {
-    Console.WriteLine("Map");
     for (int r = 0; r < mapChars.GetLength(0); r++)
     {
         var sb = new StringBuilder();
