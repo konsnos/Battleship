@@ -56,7 +56,7 @@ while (battleshipSession.SessionState == SessionState.WaitingForPlayerTurn)
         bool foundCoordinates = false;
         do
         {
-            Console.Write($"Player {battleshipSession.CurrentPlayer.Name} set fire coordinates (column, row): ");
+            Console.Write($"Player {battleshipSession.CurrentPlayer.Name} set fire coordinates (column row): ");
             string input = Console.ReadLine();
 
             string[] inputs = input.Split(" ");
@@ -77,7 +77,11 @@ while (battleshipSession.SessionState == SessionState.WaitingForPlayerTurn)
             foundCoordinates = true;
         } while (!foundCoordinates);
         
-        battleshipSession.PlayHumanTurn(aiPlayer, fireCoordinates);
+        bool successfulTurn = battleshipSession.PlayHumanTurn(aiPlayer, fireCoordinates);
+        
+        if(successfulTurn) continue;
+
+        Console.WriteLine("Illegal move. Try again");
     }
 }
 

@@ -230,7 +230,7 @@ public class BattleshipSession
         if (CurrentPlayer.IsAI)
             return false;
 
-        if (fireCoords.Column >= _rules.ColumnsSize || fireCoords.Row >= _rules.RowsSize)
+        if (fireCoords.Column < 0 || fireCoords.Row < 0 || fireCoords.Column >= _rules.ColumnsSize || fireCoords.Row >= _rules.RowsSize)
             return false;
 
         Map enemyMap = _maps[enemyPlayer.Name];

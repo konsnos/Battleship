@@ -164,7 +164,7 @@ public class Map : ICreateMap, ITargetMap
 
     public bool FireToCoordinates(MapCoordinates fireCoordinates, out ShipHitInfo shipHitInfo)
     {
-        if (fireCoordinates.Row >= _rules.RowsSize || fireCoordinates.Column >= _rules.ColumnsSize)
+        if (fireCoordinates.Row < 0 || fireCoordinates.Column < 0 ||  fireCoordinates.Row >= _rules.RowsSize || fireCoordinates.Column >= _rules.ColumnsSize)
         {
             shipHitInfo = new ShipHitInfo();
             return false;
