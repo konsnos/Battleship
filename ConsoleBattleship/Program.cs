@@ -14,10 +14,15 @@ BattleshipSession battleshipSession = new BattleshipSession(rules);
 AIPlayer aiPlayer = new AIPlayer("Random Strategy", new RandomStrategy());
 HumanPlayer humanPlayer = new HumanPlayer("Konstantinos");
 
-battleshipSession.SetPlayers(new[] { aiPlayer }, new[] { humanPlayer }, new[] { aiPlayer.Name, humanPlayer.Name });
+string[] playerOrder = { aiPlayer.Name, humanPlayer.Name };
+
+battleshipSession.SetPlayers(new[] { aiPlayer }, new[] { humanPlayer }, playerOrder);
 Console.WriteLine("Players set");
 
 Map map = new Map(rules);
+
+// map.PositionShip(new ShipLocation(rules.ShipsInMap[0], new MapCoordinates(0, 0), true));
+// map.PositionShip(new ShipLocation(rules.ShipsInMap[1], new MapCoordinates(1, 1), false));
 
 foreach (var ship in rules.ShipsInMap)
 {
