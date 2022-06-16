@@ -4,9 +4,9 @@ namespace BattleshipEngine;
 
 public struct PlayerTurnResult
 {
-    public PlayerAction PlayerAction { private set; get; }
-    public bool Hit { private set; get; }
-    public ShipHitInfo ShipHitInfo { private set; get; }
+    public PlayerAction PlayerAction { get; }
+    public bool Hit { get; }
+    public ShipHitInfo ShipHitInfo { get; }
 
     public PlayerTurnResult(PlayerAction playerAction, bool hit, ShipHitInfo shipHitInfo)
     {

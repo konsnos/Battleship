@@ -4,10 +4,10 @@ namespace BattleshipEngine.Players;
 
 public struct PlayerAction
 {
-    public Player Player { private set; get; }
+    public Player Player { get; }
     
-    public Player EnemyPlayer { private set; get; }
-    public MapCoordinates FireCoordinates { private set; get; }
+    public Player EnemyPlayer { get; }
+    public MapCoordinates FireCoordinates { get; }
 
     public PlayerAction(Player player, Player enemyPlayer, MapCoordinates fireCoordinates)
     {

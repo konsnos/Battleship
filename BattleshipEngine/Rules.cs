@@ -2,11 +2,9 @@ namespace BattleshipEngine;
 
 public struct Rules
 {
-    public int ColumnsSize { get; private set; }
-    public int RowsSize { get; private set; }
-    public List<Ship> ShipsInMap { get; private set; }
-
-    private static readonly Random _random = new Random();
+    public int ColumnsSize { get; }
+    public int RowsSize { get; }
+    public List<Ship> ShipsInMap { get; }
 
     public Rules()
     {
