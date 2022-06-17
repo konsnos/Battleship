@@ -1,13 +1,14 @@
-namespace BattleshipEngine;
-
-public struct ShipAmount
+namespace BattleshipEngine
 {
-    public Ship Ship { private set; get; }
-    public int Amount { private set; get; }
-
-    public ShipAmount(Ship ship, int amount)
+    public struct ShipAmount
     {
-        Ship = ship;
-        Amount = amount;
+        public Ship Ship { private set; get; }
+        public int Amount { private set; get; }
+
+        public ShipAmount(Ship ship, int amount)
+        {
+            Ship = ship;
+            Amount = amount;
+        }
     }
 }

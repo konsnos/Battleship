@@ -1,52 +1,54 @@
-namespace BattleshipEngine.Maps;
-
-public struct MapCoordinates : IEquatable<MapCoordinates>
+namespace BattleshipEngine.Maps
 {
-    public int Column { private set; get; }
-
-    public int Row { private set; get; }
-
-    public MapCoordinates(int newColumn, int newRow)
+    public struct MapCoordinates : IEquatable<MapCoordinates>
     {
-        Column = newColumn;
-        Row = newRow;
-    }
+        public int Column { private set; get; }
 
-    public override string ToString()
-    {
-        return $"[{Column},{Row}]";
-    }
+        public int Row { private set; get; }
 
-    public static MapCoordinates[] GetAllCoordinates(MapCoordinates startingCoordinates, bool isHorizontal, int size)
-    {
-        MapCoordinates[] mapCoordinatesArray = new MapCoordinates[size];
-
-        mapCoordinatesArray[0] = startingCoordinates;
-        for (int i = 1; i < size; i++)
+        public MapCoordinates(int newColumn, int newRow)
         {
-            var mapCoordinates = new MapCoordinates(isHorizontal
-                    ? startingCoordinates.Column + i
-                    : startingCoordinates.Column,
-                isHorizontal ? startingCoordinates.Row : startingCoordinates.Row + i
-            );
-            mapCoordinatesArray[i] = mapCoordinates;
+            Column = newColumn;
+            Row = newRow;
         }
 
-        return mapCoordinatesArray;
-    }
+        public override string ToString()
+        {
+            return $"[{Column},{Row}]";
+        }
 
-    public bool Equals(MapCoordinates other)
-    {
-        return Column == other.Column && Row == other.Row;
-    }
+        public static MapCoordinates[] GetAllCoordinates(MapCoordinates startingCoordinates, bool isHorizontal,
+            int size)
+        {
+            MapCoordinates[] mapCoordinatesArray = new MapCoordinates[size];
 
-    public override bool Equals(object? obj)
-    {
-        return obj is MapCoordinates other && Equals(other);
-    }
+            mapCoordinatesArray[0] = startingCoordinates;
+            for (int i = 1; i < size; i++)
+            {
+                var mapCoordinates = new MapCoordinates(isHorizontal
+                        ? startingCoordinates.Column + i
+                        : startingCoordinates.Column,
+                    isHorizontal ? startingCoordinates.Row : startingCoordinates.Row + i
+                );
+                mapCoordinatesArray[i] = mapCoordinates;
+            }
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Column, Row);
+            return mapCoordinatesArray;
+        }
+
+        public bool Equals(MapCoordinates other)
+        {
+            return Column == other.Column && Row == other.Row;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is MapCoordinates other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Column, Row);
+        }
     }
 }

@@ -10,19 +10,23 @@ The goal of this project is to create a battleship game plug-in.
 ### 1. Create rules
 Rules contain map size and ships to be added in maps.
 
-A default ruleset can be created with an empty constructor. This will create a map size of 10 and add the following ships
-1. Carrier, size 5, 1 time
-2. Battleship, size 4, 1 time
-3. Destroyer, size 3, 2 times
-4. Submarine, size 3, 2 times
-5. Patrol Boat, size 2, 2 times
-
-Rules can be created manually by defining columns and rows and then adding the ships
+Rules are created by defining columns and rows and then adding the ships
 
 ```
 var rules = new Rules(4, 4);
 rules.AddShip("Cruiser", 3, 2);
 ```
+
+Rules can also be quickly created by using the default method.
+```
+var rules = Rules.Default();
+```
+that contains the following ships
+1. Carrier, size 5, 1 time
+2. Battleship, size 4, 1 time
+3. Destroyer, size 3, 2 times
+4. Submarine, size 3, 2 times
+5. Patrol Boat, size 2, 2 times
 
 ### 2. Create the session
 A session must then be created to the game. This will handle turns and win conditions.

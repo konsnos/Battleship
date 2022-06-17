@@ -1,11 +1,12 @@
-namespace BattleshipEngine.Maps;
-
-public interface ICreateMap
+namespace BattleshipEngine.Maps
 {
-    void PositionShip(ShipLocation shipLocation);
-    bool AreCoordinatesInsideMap(MapCoordinates[] coordinatesArray);
-    bool AreCoordinatesFree(MapCoordinates[] coordinatesArray);
-    MapCoordinates GetRandomPositionForShip(bool isHorizontal, int size);
-    ShipLocation PositionShipInRandomCoordinatesUnsafe(Ship ship);
-    char[,] GetShipPositionsForPrint();
+    public interface ICreateMap
+    {
+        void PositionShip(ShipLocation shipLocation);
+        bool AreCoordinatesInsideMap(MapCoordinates[] coordinatesArray);
+        bool AreCoordinatesFree(MapCoordinates[] coordinatesArray);
+        MapCoordinates GetRandomPositionForShip(bool isHorizontal, int size);
+        ShipLocation PositionShipInRandomCoordinatesUnsafe(Ship ship);
+        char[,] GetShipPositionsForPrint();
+    }
 }

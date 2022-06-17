@@ -1,18 +1,19 @@
 using BattleshipEngine.Maps;
 
-namespace BattleshipEngine.Players;
-
-public struct PlayerAction
+namespace BattleshipEngine.Players
 {
-    public Player Player { get; }
-    
-    public Player EnemyPlayer { get; }
-    public MapCoordinates FireCoordinates { get; }
-
-    public PlayerAction(Player player, Player enemyPlayer, MapCoordinates fireCoordinates)
+    public struct PlayerAction
     {
-        Player = player;
-        EnemyPlayer = enemyPlayer;
-        FireCoordinates = fireCoordinates;
+        public Player Player { get; }
+
+        public Player EnemyPlayer { get; }
+        public MapCoordinates FireCoordinates { get; }
+
+        public PlayerAction(Player player, Player enemyPlayer, MapCoordinates fireCoordinates)
+        {
+            Player = player;
+            EnemyPlayer = enemyPlayer;
+            FireCoordinates = fireCoordinates;
+        }
     }
 }

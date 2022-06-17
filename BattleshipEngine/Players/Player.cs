@@ -1,20 +1,21 @@
-namespace BattleshipEngine.Players;
-
-public abstract class Player
+namespace BattleshipEngine.Players
 {
-    public string Name { get; private set; }
-
-    public abstract bool IsAI { get; }
-
-    protected Player(string name)
+    public abstract class Player
     {
-        Name = name;
-    }
+        public string Name { get; private set; }
 
-    protected Player(Player player)
-    {
-        Name = player.Name;
-    }
+        public abstract bool IsAI { get; }
 
-    public abstract Player Clone();
+        protected Player(string name)
+        {
+            Name = name;
+        }
+
+        protected Player(Player player)
+        {
+            Name = player.Name;
+        }
+
+        public abstract Player Clone();
+    }
 }

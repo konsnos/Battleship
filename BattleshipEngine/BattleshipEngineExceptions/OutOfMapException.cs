@@ -1,18 +1,19 @@
 using BattleshipEngine.Maps;
 
-namespace BattleshipEngine.BattleshipEngineExceptions;
-
-public class OutOfMapException : Exception
+namespace BattleshipEngine.BattleshipEngineExceptions
 {
-    public MapCoordinates MapCoordinates;
-    public bool IsHorizontal { private set; get; }
-    public int ShipSize { private set; get; }
-
-    public OutOfMapException(MapCoordinates newMapCoordinates, bool newIsHorizontal, int newShipSize) : base(
-        $"Coordinates {newMapCoordinates}, size {newShipSize} and horizontal {newIsHorizontal} don't fit in positions")
+    public class OutOfMapException : Exception
     {
-        MapCoordinates = newMapCoordinates;
-        IsHorizontal = newIsHorizontal;
-        ShipSize = newShipSize;
+        public MapCoordinates MapCoordinates;
+        public bool IsHorizontal { private set; get; }
+        public int ShipSize { private set; get; }
+
+        public OutOfMapException(MapCoordinates newMapCoordinates, bool newIsHorizontal, int newShipSize) : base(
+            $"Coordinates {newMapCoordinates}, size {newShipSize} and horizontal {newIsHorizontal} don't fit in positions")
+        {
+            MapCoordinates = newMapCoordinates;
+            IsHorizontal = newIsHorizontal;
+            ShipSize = newShipSize;
+        }
     }
 }

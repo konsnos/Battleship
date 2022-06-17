@@ -1,24 +1,18 @@
 using BattleshipEngine.Players;
 
-namespace BattleshipEngine;
-
-public struct PlayerTurnResult
+namespace BattleshipEngine
 {
-    public PlayerAction PlayerAction { get; }
-    public bool Hit { get; }
-    public ShipHitInfo ShipHitInfo { get; }
-
-    public PlayerTurnResult(PlayerAction playerAction, bool hit, ShipHitInfo shipHitInfo)
+    public struct PlayerTurnResult
     {
-        PlayerAction = playerAction;
-        Hit = hit;
-        ShipHitInfo = shipHitInfo;
-    }
+        public PlayerAction PlayerAction { get; }
+        public bool Hit { get; }
+        public ShipHitInfo ShipHitInfo { get; }
 
-    public PlayerTurnResult()
-    {
-        PlayerAction = new PlayerAction();
-        Hit = false;
-        ShipHitInfo = new ShipHitInfo();
+        public PlayerTurnResult(PlayerAction playerAction, bool hit, ShipHitInfo shipHitInfo)
+        {
+            PlayerAction = playerAction;
+            Hit = hit;
+            ShipHitInfo = shipHitInfo;
+        }
     }
 }

@@ -1,17 +1,18 @@
 using BattleshipEngine.Maps;
 
-namespace BattleshipEngine;
-
-public struct ShipHitInfo
+namespace BattleshipEngine
 {
-    public Ship Ship { private set; get; }
-    public MapCoordinates LastHit { private set; get; }
-    public bool IsShipWrecked { private set; get; }
-
-    public ShipHitInfo(Ship ship, MapCoordinates lastHit, bool shipWrecked)
+    public struct ShipHitInfo
     {
-        Ship = ship;
-        LastHit = lastHit;
-        IsShipWrecked = shipWrecked;
+        public Ship Ship { private set; get; }
+        public MapCoordinates LastHit { private set; get; }
+        public bool IsShipWrecked { private set; get; }
+
+        public ShipHitInfo(Ship ship, MapCoordinates lastHit, bool shipWrecked)
+        {
+            Ship = ship;
+            LastHit = lastHit;
+            IsShipWrecked = shipWrecked;
+        }
     }
 }

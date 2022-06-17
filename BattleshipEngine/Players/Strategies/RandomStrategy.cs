@@ -1,25 +1,26 @@
 using BattleshipEngine.Maps;
 
-namespace BattleshipEngine.Players.Strategies;
-
-public class RandomStrategy : Strategy
+namespace BattleshipEngine.Players.Strategies
 {
-    public override void PositionShips(Map ownMap)
+    public class RandomStrategy : Strategy
     {
-        foreach (var shipInMap in ownMap.ShipsInMap)
+        public override void PositionShips(Map ownMap)
         {
-            ownMap.PositionShipInRandomCoordinatesUnsafe(shipInMap);
+            foreach (var shipInMap in ownMap.ShipsInMap)
+            {
+                ownMap.PositionShipInRandomCoordinatesUnsafe(shipInMap);
+            }
         }
-    }
 
-    public override MapCoordinates GetFireCoordinates(Map enemyMap)
-    {
-        MapCoordinates mapCoordinates;
-        do
+        public override MapCoordinates GetFireCoordinates(Map enemyMap)
         {
-            mapCoordinates = enemyMap.GetRandomCoordinates();
-        } while (enemyMap.AreCoordinatesFiredAt(mapCoordinates));
+            MapCoordinates mapCoordinates;
+            do
+            {
+                mapCoordinates = enemyMap.GetRandomCoordinates();
+            } while (enemyMap.AreCoordinatesFiredAt(mapCoordinates));
 
-        return mapCoordinates;
+            return mapCoordinates;
+        }
     }
 }

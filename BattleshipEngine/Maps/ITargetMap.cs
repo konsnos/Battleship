@@ -1,16 +1,17 @@
 using BattleshipEngine.Maps;
 
-namespace BattleshipEngine.Interfaces;
-
-public interface ITargetMap
+namespace BattleshipEngine.Interfaces
 {
-    public IEnumerable<Ship> ShipsWrecked { get; }
-    public int ShipsRemaining { get; }
-    public IEnumerable<MapCoordinates> FiredTiles { get; }
+    public interface ITargetMap
+    {
+        public IEnumerable<Ship> ShipsWrecked { get; }
+        public int ShipsRemaining { get; }
+        public IEnumerable<MapCoordinates> FiredTiles { get; }
 
-    bool AreCoordinatesFiredAt(MapCoordinates fireCoordinates);
-    
-    bool FireToCoordinates(MapCoordinates fireCoordinates, out ShipHitInfo shipHitInfo);
+        bool AreCoordinatesFiredAt(MapCoordinates fireCoordinates);
 
-    public char[,] GetFiredCoordinatesForPrint();
+        bool FireToCoordinates(MapCoordinates fireCoordinates, out ShipHitInfo shipHitInfo);
+
+        public char[,] GetFiredCoordinatesForPrint();
+    }
 }

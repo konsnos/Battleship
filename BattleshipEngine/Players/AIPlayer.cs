@@ -1,30 +1,31 @@
 using BattleshipEngine.Players.Strategies;
 
-namespace BattleshipEngine.Players;
-
-public class AIPlayer : Player
+namespace BattleshipEngine.Players
 {
-    public override bool IsAI => true;
-
-    public Strategy Strategy { get; protected init; }
-
-    public AIPlayer(string name, Strategy strategy) : base(name)
+    public class AIPlayer : Player
     {
-        Strategy = strategy;
-    }
+        public override bool IsAI => true;
 
-    public AIPlayer(Player player, Strategy strategy) : base(player)
-    {
-        Strategy = strategy;
-    }
+        public Strategy Strategy { get; }
 
-    public AIPlayer(AIPlayer aiPlayer) :base(aiPlayer)
-    {
-        Strategy = aiPlayer.Strategy;
-    }
-    
-    public override Player Clone()
-    {
-        return new AIPlayer(this);
+        public AIPlayer(string name, Strategy strategy) : base(name)
+        {
+            Strategy = strategy;
+        }
+
+        public AIPlayer(Player player, Strategy strategy) : base(player)
+        {
+            Strategy = strategy;
+        }
+
+        public AIPlayer(AIPlayer aiPlayer) : base(aiPlayer)
+        {
+            Strategy = aiPlayer.Strategy;
+        }
+
+        public override Player Clone()
+        {
+            return new AIPlayer(this);
+        }
     }
 }

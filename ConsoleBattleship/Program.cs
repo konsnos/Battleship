@@ -62,7 +62,7 @@ while (battleshipSession.SessionState == SessionState.WaitingForPlayerTurn)
         do
         {
             Console.Write($"Player {battleshipSession.CurrentPlayer.Name} set fire coordinates (column row): ");
-            string input = Console.ReadLine();
+            string input = Console.ReadLine() ?? string.Empty;
 
             string[] inputs = input.Split(" ");
             if (inputs.Length < 2)
