@@ -21,7 +21,7 @@ Rules can also be quickly created by using the default method.
 ```
 var rules = Rules.Default();
 ```
-that contains the following ships
+setting the size to 10,10 and containing the following ships
 1. Carrier, size 5, 1 time
 2. Battleship, size 4, 1 time
 3. Destroyer, size 3, 2 times
@@ -36,7 +36,7 @@ BattleshipSession battleshipSession = new BattleshipSession(rules);
 ```
 
 ### 3. Add the players
-The game can be played with 2 players. Theoritically more can be added but this hasn't been tested.
+The game can be played with 2 players. In theory more can be added but this hasn't been tested.
 
 Players can be either AI or Human. AI players can be given a strategy class that defines their way of play.
 
@@ -76,7 +76,7 @@ Event `OnTurnChanged` will be invoked signaling the start of the first turn.
 
 ### 6. Play turns
 AI turns must be called for execution with `battleshipSession.PlayAITurn()`.
-Human turns must be the target and the fire coordinates.
+Human turns must set the target player and the fire coordinates.
 ```
 battleshipSession.PlayHumanTurn(aiPlayer, new MapCoordinates(0, 0));
 ```
