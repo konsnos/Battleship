@@ -2,8 +2,13 @@
 
 The goal of this project is to create a battleship game plug-in.
 
+In parallel I added code tests but didn't go deep into that.
+
+An example Console program is included that can run the plug in. The plug in has also been tested in Unity and seems to work.
+
 ## Todo
 * Add more strategies for AI
+* Check multiple players
 
 ## How to use
 
