@@ -23,17 +23,27 @@ namespace BattleshipEngine
         public Player CurrentPlayer { private set; get; }
         private Player _nextPlayer;
 
+        /// <summary>What is the next action required.</summary>
         public SessionState SessionState { private set; get; }
 
         #region Event variables
 
         public delegate void PlayerTurnResultDelegate(PlayerTurnResult playerTurnResult);
+        /// <summary>
+        /// Event invoked after an executed player turn.
+        /// </summary>
         public event PlayerTurnResultDelegate OnPlayerTurnResultExecuted;
 
         public delegate void TurnDelegate(int turn);
+        /// <summary>
+        /// Event invoked every time turn changes.
+        /// </summary>
         public event TurnDelegate OnTurnChanged;
 
         public delegate void PlayerDelegate(Player player);
+        /// <summary>
+        /// Event invoked when the session has been completed with a winner.
+        /// </summary>
         public event PlayerDelegate OnSessionCompleted;
 
         #endregion
@@ -140,6 +150,11 @@ namespace BattleshipEngine
             throw new Exception($"Player {playerName} isn't included in maps");
         }
 
+        /// <summary>
+        /// Initialises the state of the session.
+        /// After that make sure you listen to events for player turn result and session completed.
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         public void Start()
         {
             if (_maps == null)
@@ -186,6 +201,10 @@ namespace BattleshipEngine
             }
         }
 
+        /// <summary>
+        /// Players an AI player action based on its strategy.
+        /// </summary>
+        /// <returns></returns>
         public bool PlayAITurn()
         {
             if (SessionState != SessionState.WaitingForPlayerTurn)
@@ -221,6 +240,13 @@ namespace BattleshipEngine
             return true;
         }
 
+        /// <summary>
+        /// Players a human player turn according to the parameters of enemy and fire coordinates.
+        /// If the action is not valid the turn won't be executed and will wait until a valid action.
+        /// </summary>
+        /// <param name="enemyPlayer">Which is the enemy player</param>
+        /// <param name="fireCoords">Where to fire on enemy's map</param>
+        /// <returns></returns>
         public bool PlayHumanTurn(Player enemyPlayer, MapCoordinates fireCoords)
         {
             if (SessionState != SessionState.WaitingForPlayerTurn)
@@ -271,6 +297,9 @@ namespace BattleshipEngine
             return null;
         }
 
+        /// <summary>
+        /// Checks how many players have at least 1 remaining ship.
+        /// </summary>
         private void CheckGameEnd()
         {
             int remainingPlayers = 0;
