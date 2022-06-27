@@ -1,5 +1,8 @@
 namespace BattleshipEngine
 {
+    /// <summary>
+    /// Defines ship name, side and its id.
+    /// </summary>
     public struct Ship
     {
         public string Name { get; }

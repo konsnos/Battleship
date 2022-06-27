@@ -1,5 +1,8 @@
 namespace BattleshipEngine
 {
+    /// <summary>
+    /// Contains map size and ships requirements for maps.
+    /// </summary>
     public struct Rules
     {
         public int ColumnsSize { get; }

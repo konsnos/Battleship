@@ -2,6 +2,9 @@ using BattleshipEngine.Maps;
 
 namespace BattleshipEngine.Players
 {
+    /// <summary>
+    /// PlayerAction defines an action by which Player invoked it, which player was the target and what were the fire coordinates.
+    /// </summary>
     public struct PlayerAction
     {
         public Player Player { get; }

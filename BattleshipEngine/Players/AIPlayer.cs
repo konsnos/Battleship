@@ -2,6 +2,9 @@ using BattleshipEngine.Players.Strategies;
 
 namespace BattleshipEngine.Players
 {
+    /// <summary>
+    /// Extends player and defines the strategy which the AI player will use to place ships and attack the enemy.
+    /// </summary>
     public class AIPlayer : Player
     {
         public override bool IsAI => true;

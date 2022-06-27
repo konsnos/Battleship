@@ -2,6 +2,9 @@ using BattleshipEngine.Maps;
 
 namespace BattleshipEngine
 {
+    /// <summary>
+    /// Contains the ship that was hit, which coordinate was hit last and if it's wrecked.
+    /// </summary>
     public struct ShipHitInfo
     {
         public Ship Ship { get; }

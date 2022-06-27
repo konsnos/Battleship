@@ -2,6 +2,10 @@ using BattleshipEngine.Maps;
 
 namespace BattleshipEngine
 {
+    /// <summary>
+    /// Defines a ship location that contain the ship, if it's horizontal or vertical,
+    /// where does the placement start and which tiles contain it.
+    /// </summary>
     public struct ShipLocation
     {
         public Ship Ship { get; }

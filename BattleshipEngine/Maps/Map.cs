@@ -2,6 +2,11 @@ using BattleshipEngine.BattleshipEngineExceptions;
 
 namespace BattleshipEngine.Maps
 {
+    /// <summary>
+    /// Defines a map for a player.
+    /// The map contains the ships in it, which are wrecked and how many remain.
+    /// Furthermore, which tiles are already fired.
+    /// </summary>
     public class Map : ICreateMap, ITargetMap
     {
         private Rules _rules;
