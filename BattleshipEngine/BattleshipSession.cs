@@ -25,17 +25,18 @@ namespace BattleshipEngine
 
         public SessionState SessionState { private set; get; }
 
-        public delegate void PlayerTurnResultDelegate(PlayerTurnResult playerTurnResult);
+        #region Event variables
 
+        public delegate void PlayerTurnResultDelegate(PlayerTurnResult playerTurnResult);
         public event PlayerTurnResultDelegate OnPlayerTurnResultExecuted;
 
         public delegate void TurnDelegate(int turn);
-
         public event TurnDelegate OnTurnChanged;
 
         public delegate void PlayerDelegate(Player player);
-
         public event PlayerDelegate OnSessionCompleted;
+
+        #endregion
 
         private Queue<PlayerAction> _playerActions;
 
@@ -143,7 +144,7 @@ namespace BattleshipEngine
         {
             if (_maps == null)
             {
-                throw new Exception("Set up was not run");
+                throw new Exception("Maps weren't set");
             }
 
             _playerActions = new Queue<PlayerAction>();
@@ -188,20 +189,16 @@ namespace BattleshipEngine
         public bool PlayAITurn()
         {
             if (SessionState != SessionState.WaitingForPlayerTurn)
-            {
                 return false;
-            }
 
             if (!CurrentPlayer.IsAI)
-            {
                 return false;
-            }
 
-            Map enemyMap = _maps[_nextPlayer.Name];
+            var enemyMap = _maps[_nextPlayer.Name];
 
             var mapCoordinates = _aiPlayers[CurrentPlayer.Name].Strategy.GetFireCoordinates(enemyMap);
 
-            PlayerAction playerAction = new PlayerAction(CurrentPlayer, _nextPlayer, mapCoordinates);
+            var playerAction = new PlayerAction(CurrentPlayer, _nextPlayer, mapCoordinates);
             bool hit = enemyMap.FireToCoordinates(mapCoordinates, out ShipHitInfo shipHitInfo);
             _playerActions.Enqueue(playerAction);
 
@@ -236,12 +233,12 @@ namespace BattleshipEngine
                 fireCoords.Row >= _rules.RowsSize)
                 return false;
 
-            Map enemyMap = _maps[enemyPlayer.Name];
+            var enemyMap = _maps[enemyPlayer.Name];
 
             if (enemyMap.AreCoordinatesFiredAt(fireCoords))
                 return false;
 
-            PlayerAction playerAction = new PlayerAction(CurrentPlayer, enemyPlayer, fireCoords);
+            var playerAction = new PlayerAction(CurrentPlayer, enemyPlayer, fireCoords);
             bool hit = enemyMap.FireToCoordinates(fireCoords, out ShipHitInfo shipHitInfo);
             _playerActions.Enqueue(playerAction);
 
