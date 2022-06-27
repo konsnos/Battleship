@@ -17,7 +17,14 @@ namespace BattleshipEngine.Maps
             return $"[{Column},{Row}]";
         }
 
-        public static MapCoordinates[] GetAllCoordinates(MapCoordinates startingCoordinates, bool isHorizontal,
+        /// <summary>
+        /// Returns an array of coordinates that take up the space.
+        /// </summary>
+        /// <param name="startingCoordinates">Starting coordinates.</param>
+        /// <param name="isHorizontal">If the size will be calculated horizontal or vertical.</param>
+        /// <param name="size">Amount of coordinates required.</param>
+        /// <returns>An array of coordinates.</returns>
+        public static MapCoordinates[] GetCoordinates(MapCoordinates startingCoordinates, bool isHorizontal,
             int size)
         {
             MapCoordinates[] mapCoordinatesArray = new MapCoordinates[size];

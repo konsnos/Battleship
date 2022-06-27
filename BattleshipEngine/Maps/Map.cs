@@ -68,7 +68,7 @@ namespace BattleshipEngine.Maps
 
             var startingCoordinates = shipLocation.StartingTile;
             var isHorizontal = shipLocation.IsHorizontal;
-            var coordinates = MapCoordinates.GetAllCoordinates(startingCoordinates, isHorizontal, ship.Size);
+            var coordinates = MapCoordinates.GetCoordinates(startingCoordinates, isHorizontal, ship.Size);
             if (!AreCoordinatesInsideMap(coordinates))
             {
                 throw new OutOfMapException(startingCoordinates, isHorizontal, ship.Size);
@@ -228,7 +228,7 @@ namespace BattleshipEngine.Maps
             {
                 for (int c = 0; c < map.GetLength(1); c++) // columns
                 {
-                    map[r, c] = 'O';
+                    map[r, c] = '#';
                 }
             }
 
@@ -256,7 +256,7 @@ namespace BattleshipEngine.Maps
         {
             char[,] map = GetMapForPrint();
 
-            const char firedCharacter = 'H';
+            const char firedCharacter = 'O';
             const char wreckCharacter = 'X';
             foreach (var mapCoordinates in _firedTiles)
             {

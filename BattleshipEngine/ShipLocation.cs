@@ -40,7 +40,7 @@ namespace BattleshipEngine
 
         private void UpdateOccupiedCoordinates()
         {
-            _occupiedCoordinates = MapCoordinates.GetAllCoordinates(StartingTile, IsHorizontal, Ship.Size);
+            _occupiedCoordinates = MapCoordinates.GetCoordinates(StartingTile, IsHorizontal, Ship.Size);
         }
 
         public void ChangeLocation(MapCoordinates newCoordinates, bool newIsHorizontal)
