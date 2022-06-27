@@ -2,9 +2,9 @@ namespace BattleshipEngine
 {
     public struct Ship
     {
-        public string Name { get; private set; }
-        public int Size { get; private set; }
-        public int Id { get; private set; }
+        public string Name { get; }
+        public int Size { get; }
+        public int Id { get; }
 
         public Ship(string newName, int newSize, int newId)
         {

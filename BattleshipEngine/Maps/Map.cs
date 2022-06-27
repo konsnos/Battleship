@@ -1,5 +1,4 @@
 using BattleshipEngine.BattleshipEngineExceptions;
-using BattleshipEngine.Interfaces;
 
 namespace BattleshipEngine.Maps
 {

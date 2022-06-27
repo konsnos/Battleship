@@ -1,5 +1,4 @@
 using BattleshipEngine.BattleshipEngineExceptions;
-using BattleshipEngine.Interfaces;
 using BattleshipEngine.Maps;
 using BattleshipEngine.Players;
 

@@ -4,12 +4,11 @@ namespace BattleshipEngine
 {
     public struct ShipLocation
     {
-        public Ship Ship { get; private set; }
+        public Ship Ship { get; }
         public bool IsHorizontal { get; private set; }
         public MapCoordinates StartingTile { get; private set; }
 
-        private MapCoordinates[] _occupiedCoordinates;
-        public MapCoordinates[] OccupiedCoordinates => _occupiedCoordinates;
+        public MapCoordinates[] OccupiedCoordinates { get; private set; }
 
         public ShipLocation(Ship newShip)
         {
@@ -17,7 +16,7 @@ namespace BattleshipEngine
             IsHorizontal = false;
             StartingTile = new MapCoordinates();
 
-            _occupiedCoordinates = Array.Empty<MapCoordinates>();
+            OccupiedCoordinates = Array.Empty<MapCoordinates>();
         }
 
         public ShipLocation(ShipLocation oldShipLocation) : this(oldShipLocation.Ship)
@@ -40,7 +39,7 @@ namespace BattleshipEngine
 
         private void UpdateOccupiedCoordinates()
         {
-            _occupiedCoordinates = MapCoordinates.GetCoordinates(StartingTile, IsHorizontal, Ship.Size);
+            OccupiedCoordinates = MapCoordinates.GetCoordinates(StartingTile, IsHorizontal, Ship.Size);
         }
 
         public void ChangeLocation(MapCoordinates newCoordinates, bool newIsHorizontal)
@@ -53,7 +52,7 @@ namespace BattleshipEngine
 
         public bool CheckIfTileIsOccupied(MapCoordinates coordinateToCheck)
         {
-            return _occupiedCoordinates.Any(coordinateToCheck.Equals);
+            return OccupiedCoordinates.Any(coordinateToCheck.Equals);
         }
     }
 }

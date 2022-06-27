@@ -23,7 +23,7 @@ namespace BattleshipEngine
 
         public static Rules Default()
         {
-            Rules rules = new Rules(10, 10);
+            var rules = new Rules(10, 10);
             rules.AddShip("Carrier", 5, 1);
             rules.AddShip("Battleship", 4, 1);
             rules.AddShip("Destroyer", 3, 1);

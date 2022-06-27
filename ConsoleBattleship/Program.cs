@@ -9,17 +9,17 @@ Console.WriteLine("Setting up session");
 var rules = new Rules(4, 4);
 rules.AddShip("Cruiser", 3, 2);
 
-BattleshipSession battleshipSession = new BattleshipSession(rules);
+var battleshipSession = new BattleshipSession(rules);
 
-AIPlayer aiPlayer = new AIPlayer("Random Strategy", new RandomStrategy());
-HumanPlayer humanPlayer = new HumanPlayer("Konstantinos");
+var aiPlayer = new AIPlayer("Random Strategy", new RandomStrategy());
+var humanPlayer = new HumanPlayer("Konstantinos");
 
 string[] playerOrder = { aiPlayer.Name, humanPlayer.Name };
 
 battleshipSession.SetPlayers(new[] { aiPlayer }, new[] { humanPlayer }, playerOrder);
 Console.WriteLine("Players set");
 
-Map map = new Map(rules);
+var map = new Map(rules);
 
 // map.PositionShip(new ShipLocation(rules.ShipsInMap[0], new MapCoordinates(0, 0), true));
 // map.PositionShip(new ShipLocation(rules.ShipsInMap[1], new MapCoordinates(1, 1), false));

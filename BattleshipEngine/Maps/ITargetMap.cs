@@ -1,6 +1,4 @@
-using BattleshipEngine.Maps;
-
-namespace BattleshipEngine.Interfaces
+namespace BattleshipEngine.Maps
 {
     public interface ITargetMap
     {

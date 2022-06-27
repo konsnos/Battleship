@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using BattleshipEngine;
-using BattleshipEngine.Interfaces;
 using BattleshipEngine.Maps;
 using NUnit.Framework;
 

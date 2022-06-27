@@ -2,9 +2,9 @@ namespace BattleshipEngine.Maps
 {
     public struct MapCoordinates : IEquatable<MapCoordinates>
     {
-        public int Column { private set; get; }
+        public int Column { get; }
 
-        public int Row { private set; get; }
+        public int Row { get; }
 
         public MapCoordinates(int newColumn, int newRow)
         {
@@ -27,7 +27,7 @@ namespace BattleshipEngine.Maps
         public static MapCoordinates[] GetCoordinates(MapCoordinates startingCoordinates, bool isHorizontal,
             int size)
         {
-            MapCoordinates[] mapCoordinatesArray = new MapCoordinates[size];
+            var mapCoordinatesArray = new MapCoordinates[size];
 
             mapCoordinatesArray[0] = startingCoordinates;
             for (int i = 1; i < size; i++)

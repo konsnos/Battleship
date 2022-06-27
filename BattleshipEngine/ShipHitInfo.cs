@@ -4,9 +4,9 @@ namespace BattleshipEngine
 {
     public struct ShipHitInfo
     {
-        public Ship Ship { private set; get; }
-        public MapCoordinates LastHit { private set; get; }
-        public bool IsShipWrecked { private set; get; }
+        public Ship Ship { get; }
+        public MapCoordinates LastHit { get; }
+        public bool IsShipWrecked { get; }
 
         public ShipHitInfo(Ship ship, MapCoordinates lastHit, bool shipWrecked)
         {
