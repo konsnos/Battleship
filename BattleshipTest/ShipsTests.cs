@@ -13,7 +13,7 @@ public class ShipsTests
     [SetUp]
     public void Setup()
     {
-        _rules = new Rules();
+        _rules = Rules.Default();
 
         _shipsMap = new Map(_rules);
     }

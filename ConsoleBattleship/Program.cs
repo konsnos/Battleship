@@ -19,7 +19,8 @@ string[] playerOrder = { aiPlayer.Name, humanPlayer.Name };
 battleshipSession.SetPlayers(new[] { aiPlayer }, new[] { humanPlayer }, playerOrder);
 Console.WriteLine("Players set");
 
-var map = new Map(rules);
+//todo: use a factory to generate maps as ICreateMap
+ICreateMap map = new Map(rules);
 
 // map.PositionShip(new ShipLocation(rules.ShipsInMap[0], new MapCoordinates(0, 0), true));
 // map.PositionShip(new ShipLocation(rules.ShipsInMap[1], new MapCoordinates(1, 1), false));
@@ -29,7 +30,7 @@ foreach (var ship in rules.ShipsInMap)
     map.PositionShipInRandomCoordinatesUnsafe(ship);
 }
 
-var humanPlayerMaps = new Dictionary<string, Map>()
+var humanPlayerMaps = new Dictionary<string, ICreateMap>()
 {
     { humanPlayer.Name, map }
 };
@@ -75,7 +76,7 @@ while (battleshipSession.SessionState == SessionState.WaitingForPlayerTurn)
             if (!success)
                 continue;
 
-            fireCoordinates = new MapCoordinates(column, row);
+            fireCoordinates.ChangeCoordinates(column, row);
             bool firedAt = enemyMap.AreCoordinatesFiredAt(fireCoordinates);
             if (firedAt)
                 continue;

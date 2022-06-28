@@ -9,26 +9,29 @@ namespace BattleshipEngine.Maps
     /// </summary>
     public class Map : ICreateMap, ITargetMap
     {
-        private Rules _rules;
+        private readonly Rules _rules;
+        public int Rows => _rules.RowsSize;
+        public int Columns => _rules.ColumnsSize;
         public IEnumerable<Ship> ShipsInMap => _rules.ShipsInMap;
 
-        private HashSet<ShipLocation> _shipLocations;
-        private HashSet<MapCoordinates> _occupiedTiles;
+        private readonly HashSet<ShipLocation> _shipLocations;
+        private readonly HashSet<MapCoordinates> _occupiedTiles;
 
-        private HashSet<MapCoordinates> _firedTiles;
+        private readonly HashSet<MapCoordinates> _firedTiles;
         public IEnumerable<MapCoordinates> FiredTiles => _firedTiles;
-        private HashSet<Ship> _shipsWrecked;
+        private readonly HashSet<Ship> _shipsWrecked;
         public IEnumerable<Ship> ShipsWrecked => _shipsWrecked;
         public int ShipsRemaining => ShipsInMap.Count() - _shipsWrecked.Count;
 
-        private static readonly Random Random = new Random();
-        private static bool RandomBool => Random.Next(2) > 0;
-
         private static readonly Random _random = new Random();
+        private static bool RandomBool => _random.Next(2) > 0;
 
         public Map(Rules newRules)
         {
             _rules = newRules;
+            if (_rules.ShipsInMap.Count == 0)
+                throw new Exception("Rules assigned do not contain any ships");
+            
             _shipLocations = new HashSet<ShipLocation>(_rules.ShipsInMap.Count);
             _occupiedTiles = new HashSet<MapCoordinates>();
 
@@ -223,6 +226,12 @@ namespace BattleshipEngine.Maps
             int columnSize = isHorizontal ? _rules.ColumnsSize - size : _rules.ColumnsSize;
             int rowSize = isHorizontal ? _rules.RowsSize : _rules.RowsSize - size;
             return new MapCoordinates(_random.Next(columnSize), _random.Next(rowSize));
+        }
+
+        public bool AreCoordinatesValid(MapCoordinates mapCoordinates)
+        {
+            return mapCoordinates.Column > -1 && mapCoordinates.Row > -1 &&
+                   mapCoordinates.Column < _rules.ColumnsSize && mapCoordinates.Row < _rules.RowsSize;
         }
 
         private char[,] GetMapForPrint()

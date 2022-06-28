@@ -2,14 +2,20 @@ namespace BattleshipEngine.Maps
 {
     public struct MapCoordinates : IEquatable<MapCoordinates>
     {
-        public int Column { get; }
+        public int Column { get; private set; }
 
-        public int Row { get; }
+        public int Row { get; private set; }
 
-        public MapCoordinates(int newColumn, int newRow)
+        public MapCoordinates(int column, int row)
         {
-            Column = newColumn;
-            Row = newRow;
+            Column = column;
+            Row = row;
+        }
+
+        public void ChangeCoordinates(int column, int row)
+        {
+            Column = column;
+            Row = row;
         }
 
         public override string ToString()

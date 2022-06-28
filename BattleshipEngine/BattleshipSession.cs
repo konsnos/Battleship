@@ -6,18 +6,18 @@ namespace BattleshipEngine
 {
     public class BattleshipSession
     {
-        private Dictionary<string, AIPlayer> _aiPlayers;
-        private Dictionary<string, HumanPlayer> _humanPlayers;
+        private readonly Dictionary<string, AIPlayer> _aiPlayers;
+        private readonly Dictionary<string, HumanPlayer> _humanPlayers;
 
         public IEnumerable<string> Players =>
             _aiPlayers.Select(kvp => kvp.Key).Concat(_humanPlayers.Select(kvp => kvp.Key));
 
-        private Dictionary<string, Map> _maps;
-        private Rules _rules;
+        private readonly Dictionary<string, Map> _maps;
+        private readonly Rules _rules;
         private string[] _playerOrder;
 
-        private int _currentTurn;
-        public int CurrentTurn => _currentTurn;
+        public int CurrentTurn { get; private set; }
+
         private int _currentPlayerIndex;
 
         public Player CurrentPlayer { private set; get; }
@@ -29,18 +29,21 @@ namespace BattleshipEngine
         #region Event variables
 
         public delegate void PlayerTurnResultDelegate(PlayerTurnResult playerTurnResult);
+
         /// <summary>
         /// Event invoked after an executed player turn.
         /// </summary>
         public event PlayerTurnResultDelegate OnPlayerTurnResultExecuted;
 
         public delegate void TurnDelegate(int turn);
+
         /// <summary>
         /// Event invoked every time turn changes.
         /// </summary>
         public event TurnDelegate OnTurnChanged;
 
         public delegate void PlayerDelegate(Player player);
+
         /// <summary>
         /// Event invoked when the session has been completed with a winner.
         /// </summary>
@@ -48,13 +51,13 @@ namespace BattleshipEngine
 
         #endregion
 
-        private Queue<PlayerAction> _playerActions;
+        private Queue<PlayerAction> _playersActions;
 
         public BattleshipSession(Rules rules)
         {
             if (rules.ShipsInMap.Count == 0)
                 throw new Exception("No ships added in rules");
-            
+
             _rules = rules;
             SessionState = SessionState.WaitingForPlayers;
             _aiPlayers = new Dictionary<string, AIPlayer>();
@@ -102,7 +105,7 @@ namespace BattleshipEngine
             SessionState = SessionState.WaitingForMaps;
         }
 
-        public void SetMaps(Dictionary<string, Map> humanPlayersMaps)
+        public void SetMaps(Dictionary<string, ICreateMap> humanPlayersMaps)
         {
             _maps.Clear();
 
@@ -115,23 +118,21 @@ namespace BattleshipEngine
                         $"Missing player's {humanPlayer.Name} map");
                 }
 
-                Map map = humanPlayersMaps[humanPlayer.Name];
+                var map = (Map)humanPlayersMaps[humanPlayer.Name];
 
                 foreach (var ship in _rules.ShipsInMap)
                 {
                     if (!map.IsShipPositioned(ship, out _))
-                    {
                         throw new Exception($"Ship {ship} not positioned. Position all your ships on the map first.");
-                    }
                 }
 
-                _maps.Add(humanPlayer.Name, humanPlayersMaps[humanPlayer.Name].Clone());
+                _maps.Add(humanPlayer.Name, map.Clone());
             }
 
             // set up ai maps
             foreach (var aiPlayer in _aiPlayers.Values)
             {
-                Map map = new Map(_rules);
+                var map = new Map(_rules);
                 aiPlayer.Strategy.PositionShips(map);
 
                 _maps.Add(aiPlayer.Name, map);
@@ -142,10 +143,8 @@ namespace BattleshipEngine
 
         public ITargetMap GetTargetMap(string playerName)
         {
-            if (_maps.TryGetValue(playerName, out Map map))
-            {
+            if (_maps.TryGetValue(playerName, out var map))
                 return map;
-            }
 
             throw new Exception($"Player {playerName} isn't included in maps");
         }
@@ -158,16 +157,14 @@ namespace BattleshipEngine
         public void Start()
         {
             if (_maps == null)
-            {
                 throw new Exception("Maps weren't set");
-            }
 
-            _playerActions = new Queue<PlayerAction>();
+            _playersActions = new Queue<PlayerAction>();
 
-            _currentTurn = 0;
+            CurrentTurn = 0;
 
             SessionState = SessionState.WaitingForPlayerTurn;
-            OnTurnChanged.Invoke(_currentTurn);
+            OnTurnChanged.Invoke(CurrentTurn);
         }
 
         private void UpdateNextPlayer()
@@ -196,8 +193,8 @@ namespace BattleshipEngine
 
             if (updateTurn)
             {
-                _currentTurn++;
-                OnTurnChanged.Invoke(_currentTurn);
+                CurrentTurn++;
+                OnTurnChanged.Invoke(CurrentTurn);
             }
         }
 
@@ -218,24 +215,7 @@ namespace BattleshipEngine
             var mapCoordinates = _aiPlayers[CurrentPlayer.Name].Strategy.GetFireCoordinates(enemyMap);
 
             var playerAction = new PlayerAction(CurrentPlayer, _nextPlayer, mapCoordinates);
-            bool hit = enemyMap.FireToCoordinates(mapCoordinates, out ShipHitInfo shipHitInfo);
-            _playerActions.Enqueue(playerAction);
-
-            var playerTurnResult = new PlayerTurnResult(playerAction, hit, shipHitInfo);
-            OnPlayerTurnResultExecuted?.Invoke(playerTurnResult);
-
-            // check if enemy has lost
-            if (hit && shipHitInfo.IsShipWrecked)
-            {
-                if (enemyMap.ShipsRemaining == 0)
-                {
-                    // player lost
-                    CheckGameEnd();
-                }
-            }
-
-            if (SessionState == SessionState.WaitingForPlayerTurn)
-                AdvanceCurrentPlayer();
+            ExecutePlayerAction(playerAction, enemyMap);
 
             return true;
         }
@@ -255,35 +235,33 @@ namespace BattleshipEngine
             if (CurrentPlayer.IsAI)
                 return false;
 
-            if (fireCoords.Column < 0 || fireCoords.Row < 0 || fireCoords.Column >= _rules.ColumnsSize ||
-                fireCoords.Row >= _rules.RowsSize)
-                return false;
-
             var enemyMap = _maps[enemyPlayer.Name];
+
+            if (!enemyMap.AreCoordinatesValid(fireCoords))
+                return false;
 
             if (enemyMap.AreCoordinatesFiredAt(fireCoords))
                 return false;
 
             var playerAction = new PlayerAction(CurrentPlayer, enemyPlayer, fireCoords);
-            bool hit = enemyMap.FireToCoordinates(fireCoords, out ShipHitInfo shipHitInfo);
-            _playerActions.Enqueue(playerAction);
+            ExecutePlayerAction(playerAction, enemyMap);
+
+            return true;
+        }
+
+        private void ExecutePlayerAction(PlayerAction playerAction, Map enemyMap)
+        {
+            bool hit = enemyMap.FireToCoordinates(playerAction.FireCoordinates, out var shipHitInfo);
+            _playersActions.Enqueue(playerAction);
 
             var playerTurnResult = new PlayerTurnResult(playerAction, hit, shipHitInfo);
             OnPlayerTurnResultExecuted?.Invoke(playerTurnResult);
 
-            if (hit && shipHitInfo.IsShipWrecked)
-            {
-                if (enemyMap.ShipsRemaining == 0)
-                {
-                    // player lost
-                    CheckGameEnd();
-                }
-            }
+            if (hit && shipHitInfo.IsShipWrecked && enemyMap.ShipsRemaining == 0)
+                CheckGameEnd();
 
             if (SessionState == SessionState.WaitingForPlayerTurn)
                 AdvanceCurrentPlayer();
-
-            return true;
         }
 
         private Player GetPlayer(string name)

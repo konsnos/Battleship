@@ -3,11 +3,18 @@ namespace BattleshipEngine
     /// <summary>
     /// Contains map size and ships requirements for maps.
     /// </summary>
-    public struct Rules
+    public readonly struct Rules
     {
         public int ColumnsSize { get; }
         public int RowsSize { get; }
         public List<Ship> ShipsInMap { get; }
+
+        public Rules()
+        {
+            ColumnsSize = 10;
+            RowsSize = 10;
+            ShipsInMap = new List<Ship>();
+        }
 
         public Rules(int newColumnsSize, int newRowsSize)
         {

@@ -15,7 +15,7 @@ public class FireTests
     [SetUp]
     public void Setup()
     {
-        _rules = new Rules();
+        _rules = Rules.Default();
         _shipLocations = new List<ShipLocation>(_rules.ShipsInMap.Count);
 
         Map map = new Map(_rules);

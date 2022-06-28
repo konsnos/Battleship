@@ -12,7 +12,7 @@ public class MapTests
     [SetUp]
     public void SetUp()
     {
-        _rules = new Rules();
+        _rules = Rules.Default();
         _map = new Map(_rules);
     }
 

@@ -3,7 +3,9 @@ using BattleshipEngine.Maps;
 namespace BattleshipEngine.Players.Strategies
 {
     public class RandomStrategy : Strategy
-    {
+    {        
+        private static readonly Random _random = new Random();
+
         public override void PositionShips(Map ownMap)
         {
             foreach (var shipInMap in ownMap.ShipsInMap)
@@ -12,12 +14,12 @@ namespace BattleshipEngine.Players.Strategies
             }
         }
 
-        public override MapCoordinates GetFireCoordinates(Map enemyMap)
+        public override MapCoordinates GetFireCoordinates(ITargetMap enemyMap)
         {
-            MapCoordinates mapCoordinates;
+            var mapCoordinates = new MapCoordinates();
             do
             {
-                mapCoordinates = enemyMap.GetRandomCoordinates();
+                mapCoordinates.ChangeCoordinates(_random.Next(enemyMap.Columns), _random.Next(enemyMap.Rows));
             } while (enemyMap.AreCoordinatesFiredAt(mapCoordinates));
 
             return mapCoordinates;
