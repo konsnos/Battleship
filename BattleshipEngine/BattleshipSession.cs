@@ -53,6 +53,11 @@ namespace BattleshipEngine
 
         private Queue<PlayerAction> _playersActions;
 
+        /// <summary>
+        /// Initialises a session with rules.
+        /// </summary>
+        /// <param name="rules">Rules for map creation.</param>
+        /// <exception cref="Exception">Thrown if ships are missing from rules.</exception>
         public BattleshipSession(Rules rules)
         {
             if (rules.ShipsInMap.Count == 0)
@@ -105,6 +110,12 @@ namespace BattleshipEngine
             SessionState = SessionState.WaitingForMaps;
         }
 
+        /// <summary>
+        /// Creates player and ai maps.
+        /// </summary>
+        /// <param name="humanPlayersMaps">Dictionary with the name of the player and its map.</param>
+        /// <exception cref="MissingPlayerInformationException">Thrown if any player map is missing.</exception>
+        /// <exception cref="Exception">Thrown if ships are missing from maps.</exception>
         public void SetMaps(Dictionary<string, ICreateMap> humanPlayersMaps)
         {
             _maps.Clear();
@@ -153,7 +164,7 @@ namespace BattleshipEngine
         /// Initialises the state of the session.
         /// After that make sure you listen to events for player turn result and session completed.
         /// </summary>
-        /// <exception cref="Exception"></exception>
+        /// <exception cref="Exception">Throws an exception if maps aren't set.</exception>
         public void Start()
         {
             if (_maps == null)
@@ -199,9 +210,9 @@ namespace BattleshipEngine
         }
 
         /// <summary>
-        /// Players an AI player action based on its strategy.
+        /// Plays an AI player action based on its strategy.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>If the action is valid.</returns>
         public bool PlayAITurn()
         {
             if (SessionState != SessionState.WaitingForPlayerTurn)
@@ -226,7 +237,7 @@ namespace BattleshipEngine
         /// </summary>
         /// <param name="enemyPlayer">Which is the enemy player</param>
         /// <param name="fireCoords">Where to fire on enemy's map</param>
-        /// <returns></returns>
+        /// <returns>If the action is valid.</returns>
         public bool PlayHumanTurn(Player enemyPlayer, MapCoordinates fireCoords)
         {
             if (SessionState != SessionState.WaitingForPlayerTurn)
