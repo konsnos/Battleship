@@ -11,12 +11,12 @@ rules.AddShip("Cruiser", 3, 2);
 
 var battleshipSession = new BattleshipSession(rules);
 
-var aiPlayer = new AIPlayer("Random AI", AIFactory.GetAI(AIType.Random));
-var humanPlayer = new HumanPlayer("Konstantinos");
+var aiPlayer = new AIPlayer("Random AI", AIFactory.GetAI(battleshipSession, AIType.Random));
+var humanPlayer = new AIPlayer("Hunt AI", AIFactory.GetAI(battleshipSession, AIType.Hunt));
 
 string[] playerOrder = { aiPlayer.Name, humanPlayer.Name };
 
-battleshipSession.SetPlayers(new[] { aiPlayer }, new[] { humanPlayer }, playerOrder);
+battleshipSession.SetPlayers(new[] { aiPlayer, humanPlayer }, Array.Empty<HumanPlayer>(), playerOrder);
 Console.WriteLine("Players set");
 
 var playerMap = MapFactory.GetCreateMap(rules);
@@ -37,9 +37,11 @@ var humanPlayerMaps = new Dictionary<string, ICreateMap>()
 battleshipSession.SetMaps(humanPlayerMaps);
 Console.WriteLine("Maps set");
 
-battleshipSession.OnPlayerTurnResultExecuted += OnPlayerTurnResultExecuted;
-battleshipSession.OnTurnChanged += OnTurnChanged;
-battleshipSession.OnSessionCompleted += OnSessionCompleted;
+int currentTurn = 0;
+
+battleshipSession.PlayerTurnResultExecuted += OnPlayerTurnResultExecuted;
+battleshipSession.TurnChanged += OnTurnChanged;
+battleshipSession.SessionCompleted += OnSessionCompleted;
 Console.WriteLine("Starting...");
 battleshipSession.Start();
 
@@ -94,26 +96,26 @@ Console.WriteLine("Program ended...");
 
 void OnPlayerTurnResultExecuted(PlayerTurnResult playerTurnResult)
 {
-    Console.WriteLine($"{playerTurnResult.PlayerAction.Player.Name} attacked to {playerTurnResult.PlayerAction.EnemyPlayer.Name} at {playerTurnResult.PlayerAction.FireCoordinates}");
+    Console.WriteLine($"{playerTurnResult.PlayerAction.Player.Name} attacked to {playerTurnResult.PlayerAction.EnemyPlayer.Name} at {playerTurnResult.PlayerAction.FireCoordinates}, at turn {currentTurn}");
 
-    if (playerTurnResult.ShipHitInfo.IsShipWrecked)
+    if (playerTurnResult.Hit)
     {
-        Console.WriteLine($"Hit {playerTurnResult.Hit}, ship wrecked {playerTurnResult.ShipHitInfo.IsShipWrecked}");
+        Console.WriteLine("Hit!");
     }
 }
 
 void OnTurnChanged(int turn)
 {
-    
+    currentTurn = turn;
 }
 
 void OnSessionCompleted(Player winner)
 {
-    battleshipSession.OnPlayerTurnResultExecuted -= OnPlayerTurnResultExecuted;
-    battleshipSession.OnTurnChanged -= OnTurnChanged;
-    battleshipSession.OnSessionCompleted -= OnSessionCompleted;
+    battleshipSession.PlayerTurnResultExecuted -= OnPlayerTurnResultExecuted;
+    battleshipSession.TurnChanged -= OnTurnChanged;
+    battleshipSession.SessionCompleted -= OnSessionCompleted;
     
-    Console.WriteLine($"Session completed. Winner {winner.Name}");
+    Console.WriteLine($"Session completed at turn {currentTurn}. Winner {winner.Name}");
 }
 
 void PrintMap(char[,] mapChars)

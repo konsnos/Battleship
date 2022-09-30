@@ -33,21 +33,21 @@ namespace BattleshipEngine
         /// <summary>
         /// Event invoked after an executed player turn.
         /// </summary>
-        public event PlayerTurnResultDelegate OnPlayerTurnResultExecuted;
+        public event PlayerTurnResultDelegate PlayerTurnResultExecuted;
 
         public delegate void TurnDelegate(int turn);
 
         /// <summary>
         /// Event invoked every time turn changes.
         /// </summary>
-        public event TurnDelegate OnTurnChanged;
+        public event TurnDelegate TurnChanged;
 
         public delegate void PlayerDelegate(Player player);
 
         /// <summary>
         /// Event invoked when the session has been completed with a winner.
         /// </summary>
-        public event PlayerDelegate OnSessionCompleted;
+        public event PlayerDelegate SessionCompleted;
 
         #endregion
 
@@ -174,14 +174,14 @@ namespace BattleshipEngine
         public void Start()
         {
             if (_maps == null)
-                throw new Exception("Maps weren't set");
+                throw new Exception("Maps are not set");
 
             _playersActions = new Queue<PlayerAction>();
 
             CurrentTurn = 0;
 
             SessionState = SessionState.WaitingForPlayerTurn;
-            OnTurnChanged.Invoke(CurrentTurn);
+            TurnChanged.Invoke(CurrentTurn);
         }
 
         private void UpdateNextPlayer()
@@ -211,7 +211,7 @@ namespace BattleshipEngine
             if (updateTurn)
             {
                 CurrentTurn++;
-                OnTurnChanged.Invoke(CurrentTurn);
+                TurnChanged.Invoke(CurrentTurn);
             }
         }
 
@@ -266,13 +266,13 @@ namespace BattleshipEngine
             return true;
         }
 
-        private void ExecutePlayerAction(PlayerAction playerAction, Map enemyMap)
+        private void ExecutePlayerAction(PlayerAction playerAction, ITargetMap enemyMap)
         {
             bool hit = enemyMap.FireToCoordinates(playerAction.FireCoordinates, out var shipHitInfo);
             _playersActions.Enqueue(playerAction);
 
-            var playerTurnResult = new PlayerTurnResult(playerAction, hit, shipHitInfo);
-            OnPlayerTurnResultExecuted?.Invoke(playerTurnResult);
+            var playerTurnResult = new PlayerTurnResult(playerAction, hit);
+            PlayerTurnResultExecuted(playerTurnResult);
 
             if (hit && shipHitInfo.IsShipWrecked && enemyMap.ShipsRemaining == 0)
                 CheckGameEnd();
@@ -283,13 +283,13 @@ namespace BattleshipEngine
 
         private Player GetPlayer(string name)
         {
-            if (_humanPlayers.TryGetValue(name, out HumanPlayer humanPlayer))
+            if (_humanPlayers.TryGetValue(name, out var humanPlayer))
                 return humanPlayer;
 
-            if (_aiPlayers.TryGetValue(name, out AIPlayer aiPlayer))
+            if (_aiPlayers.TryGetValue(name, out var aiPlayer))
                 return aiPlayer;
 
-            return null;
+            throw new PlayerNotFoundException(name);
         }
 
         /// <summary>
@@ -312,8 +312,8 @@ namespace BattleshipEngine
             {
                 SessionState = SessionState.Ended;
 
-                Player winner = GetPlayer(lastPlayer);
-                OnSessionCompleted?.Invoke(winner);
+                var winner = GetPlayer(lastPlayer);
+                SessionCompleted(winner);
             }
         }
     }

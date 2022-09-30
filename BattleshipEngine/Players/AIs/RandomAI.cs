@@ -3,10 +3,12 @@ using BattleshipEngine.Maps;
 namespace BattleshipEngine.Players.AIs
 {
     public class RandomAI : BaseAI
-    {        
-        private static readonly Random _random = new Random();
+    {
+        public RandomAI(BattleshipSession battleshipSession) : base(battleshipSession)
+        {
+        }
 
-        public override void PositionShips(Map ownMap)
+        public override void PositionShips(ICreateMap ownMap)
         {
             foreach (var shipInMap in ownMap.ShipsInMap)
             {
@@ -16,13 +18,7 @@ namespace BattleshipEngine.Players.AIs
 
         public override MapCoordinates GetFireCoordinates(ITargetMap enemyMap)
         {
-            var mapCoordinates = new MapCoordinates();
-            do
-            {
-                mapCoordinates.ChangeCoordinates(_random.Next(enemyMap.Columns), _random.Next(enemyMap.Rows));
-            } while (enemyMap.AreCoordinatesFiredAt(mapCoordinates));
-
-            return mapCoordinates;
+            return GetRandomFireAtCoordinates(enemyMap);
         }
     }
 }

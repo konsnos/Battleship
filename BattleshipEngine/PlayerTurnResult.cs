@@ -10,13 +10,11 @@ namespace BattleshipEngine
     {
         public PlayerAction PlayerAction { get; }
         public bool Hit { get; }
-        public ShipHitInfo ShipHitInfo { get; }
 
-        public PlayerTurnResult(PlayerAction playerAction, bool hit, ShipHitInfo shipHitInfo)
+        public PlayerTurnResult(PlayerAction playerAction, bool hit)
         {
             PlayerAction = playerAction;
             Hit = hit;
-            ShipHitInfo = shipHitInfo;
         }
     }
 }

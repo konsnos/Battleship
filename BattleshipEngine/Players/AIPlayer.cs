@@ -14,11 +14,13 @@ namespace BattleshipEngine.Players
         public AIPlayer(string name, BaseAI baseAi) : base(name)
         {
             BaseAi = baseAi;
+            BaseAi.AssignPlayer(this);
         }
 
         public AIPlayer(Player player, BaseAI baseAi) : base(player)
         {
             BaseAi = baseAi;
+            BaseAi.AssignPlayer(this);
         }
 
         public AIPlayer(AIPlayer aiPlayer) : base(aiPlayer)

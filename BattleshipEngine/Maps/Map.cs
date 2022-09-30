@@ -43,21 +43,21 @@ namespace BattleshipEngine.Maps
         {
         }
 
-        #region IShipsMap
+        #region ICreateMap
 
         public ShipLocation PositionShipInRandomCoordinatesUnsafe(Ship ship)
         {
             bool isInsideMap = false;
             bool isPositionFree = false;
 
-            ShipLocation shipLocation = new ShipLocation(ship);
+            var shipLocation = new ShipLocation(ship);
 
             while (!isInsideMap || !isPositionFree)
             {
                 bool isHorizontal = RandomBool;
                 var coordinates = GetRandomPositionForShip(isHorizontal, ship.Size);
                 shipLocation.ChangeLocation(coordinates, isHorizontal);
-                isInsideMap = AreCoordinatesInsideMap(shipLocation.OccupiedCoordinates);
+                isInsideMap = AreCoordinatesValid(shipLocation.OccupiedCoordinates);
                 isPositionFree = AreCoordinatesFree(shipLocation.OccupiedCoordinates);
             }
 
@@ -76,7 +76,7 @@ namespace BattleshipEngine.Maps
             var startingCoordinates = shipLocation.StartingTile;
             var isHorizontal = shipLocation.IsHorizontal;
             var coordinates = MapCoordinates.GetCoordinates(startingCoordinates, isHorizontal, ship.Size);
-            if (!AreCoordinatesInsideMap(coordinates))
+            if (!AreCoordinatesValid(coordinates))
             {
                 throw new OutOfMapException(startingCoordinates, isHorizontal, ship.Size);
             }
@@ -97,11 +97,11 @@ namespace BattleshipEngine.Maps
             AddShip(shipLocationToAdd);
         }
 
-        public bool AreCoordinatesInsideMap(MapCoordinates[] coordinatesArray)
+        public bool AreCoordinatesValid(MapCoordinates[] coordinatesArray)
         {
             foreach (var coordinates in coordinatesArray)
             {
-                if (coordinates.Column >= _rules.ColumnsSize || coordinates.Row >= _rules.RowsSize)
+                if (!AreCoordinatesValid(coordinates))
                 {
                     return false;
                 }
@@ -177,8 +177,7 @@ namespace BattleshipEngine.Maps
 
         public bool FireToCoordinates(MapCoordinates fireCoordinates, out ShipHitInfo shipHitInfo)
         {
-            if (fireCoordinates.Row < 0 || fireCoordinates.Column < 0 || fireCoordinates.Row >= _rules.RowsSize ||
-                fireCoordinates.Column >= _rules.ColumnsSize)
+            if (!AreCoordinatesValid(fireCoordinates))
             {
                 shipHitInfo = new ShipHitInfo();
                 return false;

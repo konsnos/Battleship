@@ -10,6 +10,8 @@ namespace BattleshipEngine.Maps
 
         bool AreCoordinatesFiredAt(MapCoordinates fireCoordinates);
 
+        bool AreCoordinatesValid(MapCoordinates mapCoordinates);
+
         bool FireToCoordinates(MapCoordinates fireCoordinates, out ShipHitInfo shipHitInfo);
 
         public char[,] GetFiredCoordinatesForPrint();
