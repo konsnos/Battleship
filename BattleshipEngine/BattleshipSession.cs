@@ -144,7 +144,7 @@ namespace BattleshipEngine
             foreach (var aiPlayer in _aiPlayers.Values)
             {
                 var map = new Map(_rules);
-                aiPlayer.Strategy.PositionShips(map);
+                aiPlayer.BaseAi.PositionShips(map);
 
                 _maps.Add(aiPlayer.Name, map);
             }
@@ -152,6 +152,12 @@ namespace BattleshipEngine
             SessionState = SessionState.Ready;
         }
 
+        /// <summary>
+        /// Returns the map of the player.
+        /// </summary>
+        /// <param name="playerName">The player to find and return the map.</param>
+        /// <returns>The map of the player.</returns>
+        /// <exception cref="Exception">Throws an exception if the player's map doesn't exist.</exception>
         public ITargetMap GetTargetMap(string playerName)
         {
             if (_maps.TryGetValue(playerName, out var map))
@@ -223,7 +229,7 @@ namespace BattleshipEngine
 
             var enemyMap = _maps[_nextPlayer.Name];
 
-            var mapCoordinates = _aiPlayers[CurrentPlayer.Name].Strategy.GetFireCoordinates(enemyMap);
+            var mapCoordinates = _aiPlayers[CurrentPlayer.Name].BaseAi.GetFireCoordinates(enemyMap);
 
             var playerAction = new PlayerAction(CurrentPlayer, _nextPlayer, mapCoordinates);
             ExecutePlayerAction(playerAction, enemyMap);

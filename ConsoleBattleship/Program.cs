@@ -2,7 +2,7 @@
 using BattleshipEngine;
 using BattleshipEngine.Maps;
 using BattleshipEngine.Players;
-using BattleshipEngine.Players.Strategies;
+using BattleshipEngine.Players.AIs;
 
 Console.WriteLine("Setting up session");
 
@@ -11,7 +11,7 @@ rules.AddShip("Cruiser", 3, 2);
 
 var battleshipSession = new BattleshipSession(rules);
 
-var aiPlayer = new AIPlayer("Random Strategy", new RandomStrategy());
+var aiPlayer = new AIPlayer("Random AI", AIFactory.GetAI(AIType.Random));
 var humanPlayer = new HumanPlayer("Konstantinos");
 
 string[] playerOrder = { aiPlayer.Name, humanPlayer.Name };
@@ -19,20 +19,19 @@ string[] playerOrder = { aiPlayer.Name, humanPlayer.Name };
 battleshipSession.SetPlayers(new[] { aiPlayer }, new[] { humanPlayer }, playerOrder);
 Console.WriteLine("Players set");
 
-//todo: use a factory to generate maps as ICreateMap
-ICreateMap map = new Map(rules);
+var playerMap = MapFactory.GetCreateMap(rules);
 
 // map.PositionShip(new ShipLocation(rules.ShipsInMap[0], new MapCoordinates(0, 0), true));
 // map.PositionShip(new ShipLocation(rules.ShipsInMap[1], new MapCoordinates(1, 1), false));
 
 foreach (var ship in rules.ShipsInMap)
 {
-    map.PositionShipInRandomCoordinatesUnsafe(ship);
+    playerMap.PositionShipInRandomCoordinatesUnsafe(ship);
 }
 
 var humanPlayerMaps = new Dictionary<string, ICreateMap>()
 {
-    { humanPlayer.Name, map }
+    { humanPlayer.Name, playerMap }
 };
 
 battleshipSession.SetMaps(humanPlayerMaps);
@@ -62,7 +61,7 @@ while (battleshipSession.SessionState == SessionState.WaitingForPlayerTurn)
         bool foundCoordinates = false;
         do
         {
-            Console.Write($"Player {battleshipSession.CurrentPlayer.Name} set fire coordinates (column row): ");
+            Console.Write($"{battleshipSession.CurrentPlayer.Name} set fire coordinates (column row): ");
             string input = Console.ReadLine() ?? string.Empty;
 
             string[] inputs = input.Split(" ");
@@ -95,7 +94,7 @@ Console.WriteLine("Program ended...");
 
 void OnPlayerTurnResultExecuted(PlayerTurnResult playerTurnResult)
 {
-    Console.WriteLine($"Player {playerTurnResult.PlayerAction.Player.Name} attacked to {playerTurnResult.PlayerAction.EnemyPlayer.Name} at {playerTurnResult.PlayerAction.FireCoordinates}");
+    Console.WriteLine($"{playerTurnResult.PlayerAction.Player.Name} attacked to {playerTurnResult.PlayerAction.EnemyPlayer.Name} at {playerTurnResult.PlayerAction.FireCoordinates}");
 
     if (playerTurnResult.ShipHitInfo.IsShipWrecked)
     {

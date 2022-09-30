@@ -1,4 +1,4 @@
-using BattleshipEngine.Players.Strategies;
+using BattleshipEngine.Players.AIs;
 
 namespace BattleshipEngine.Players
 {
@@ -9,21 +9,21 @@ namespace BattleshipEngine.Players
     {
         public override bool IsAI => true;
 
-        public Strategy Strategy { get; }
+        public BaseAI BaseAi { get; }
 
-        public AIPlayer(string name, Strategy strategy) : base(name)
+        public AIPlayer(string name, BaseAI baseAi) : base(name)
         {
-            Strategy = strategy;
+            BaseAi = baseAi;
         }
 
-        public AIPlayer(Player player, Strategy strategy) : base(player)
+        public AIPlayer(Player player, BaseAI baseAi) : base(player)
         {
-            Strategy = strategy;
+            BaseAi = baseAi;
         }
 
         public AIPlayer(AIPlayer aiPlayer) : base(aiPlayer)
         {
-            Strategy = aiPlayer.Strategy;
+            BaseAi = aiPlayer.BaseAi;
         }
 
         public override Player Clone()

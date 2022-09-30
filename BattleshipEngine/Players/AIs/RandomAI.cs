@@ -1,8 +1,8 @@
 using BattleshipEngine.Maps;
 
-namespace BattleshipEngine.Players.Strategies
+namespace BattleshipEngine.Players.AIs
 {
-    public class RandomStrategy : Strategy
+    public class RandomAI : BaseAI
     {        
         private static readonly Random _random = new Random();
 
