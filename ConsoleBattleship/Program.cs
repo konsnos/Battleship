@@ -11,12 +11,12 @@ rules.AddShip("Cruiser", 3, 2);
 
 var battleshipSession = new BattleshipSession(rules);
 
-var aiPlayer = new AIPlayer("Random AI", AIFactory.GetAI(battleshipSession, AIType.Random));
-var humanPlayer = new AIPlayer("Hunt AI", AIFactory.GetAI(battleshipSession, AIType.Hunt));
+var aiPlayer = new AIPlayer("Hunter AI", AIFactory.GetAI(battleshipSession, AIType.Hunter));
+var humanPlayer = new HumanPlayer("Konstantinos");
 
 string[] playerOrder = { aiPlayer.Name, humanPlayer.Name };
 
-battleshipSession.SetPlayers(new[] { aiPlayer, humanPlayer }, Array.Empty<HumanPlayer>(), playerOrder);
+battleshipSession.SetPlayers(new[] { aiPlayer }, new[] { humanPlayer }, playerOrder);
 Console.WriteLine("Players set");
 
 var playerMap = MapFactory.GetCreateMap(rules);
@@ -26,7 +26,9 @@ var playerMap = MapFactory.GetCreateMap(rules);
 
 foreach (var ship in rules.ShipsInMap)
 {
-    playerMap.PositionShipInRandomCoordinatesUnsafe(ship);
+    var positionedShip = playerMap.PositionShipInRandomCoordinatesUnsafe(ship);
+    Console.WriteLine(
+        $"Player positioned {positionedShip.Ship.Name}, at {positionedShip.StartingTile}, horizontal {positionedShip.IsHorizontal}");
 }
 
 var humanPlayerMaps = new Dictionary<string, ICreateMap>()
@@ -55,7 +57,7 @@ while (battleshipSession.SessionState == SessionState.WaitingForPlayerTurn)
     else
     {
         var enemyMap = battleshipSession.GetTargetMap(aiPlayer.Name);
-        
+
         Console.WriteLine($"{aiPlayer.Name} target map");
         PrintMap(enemyMap.GetFiredCoordinatesForPrint());
 
@@ -83,10 +85,10 @@ while (battleshipSession.SessionState == SessionState.WaitingForPlayerTurn)
                 continue;
             foundCoordinates = true;
         } while (!foundCoordinates);
-        
+
         bool successfulTurn = battleshipSession.PlayHumanTurn(aiPlayer, fireCoordinates);
-        
-        if(successfulTurn) continue;
+
+        if (successfulTurn) continue;
 
         Console.WriteLine("Illegal move. Try again");
     }
@@ -96,12 +98,15 @@ Console.WriteLine("Program ended...");
 
 void OnPlayerTurnResultExecuted(PlayerTurnResult playerTurnResult)
 {
-    Console.WriteLine($"{playerTurnResult.PlayerAction.Player.Name} attacked to {playerTurnResult.PlayerAction.EnemyPlayer.Name} at {playerTurnResult.PlayerAction.FireCoordinates}, at turn {currentTurn}");
+    Console.Write(
+        $"{playerTurnResult.PlayerAction.Player.Name} attacked {playerTurnResult.PlayerAction.EnemyPlayer.Name} at {playerTurnResult.PlayerAction.FireCoordinates}, at turn {currentTurn}.");
 
     if (playerTurnResult.Hit)
     {
-        Console.WriteLine("Hit!");
+        Console.Write(" Hit!");
     }
+
+    Console.WriteLine();
 }
 
 void OnTurnChanged(int turn)
@@ -114,8 +119,8 @@ void OnSessionCompleted(Player winner)
     battleshipSession.PlayerTurnResultExecuted -= OnPlayerTurnResultExecuted;
     battleshipSession.TurnChanged -= OnTurnChanged;
     battleshipSession.SessionCompleted -= OnSessionCompleted;
-    
-    Console.WriteLine($"Session completed at turn {currentTurn}. Winner {winner.Name}");
+
+    Console.WriteLine($"Session completed at turn {currentTurn}.\nWinner: {winner.Name}");
 }
 
 void PrintMap(char[,] mapChars)

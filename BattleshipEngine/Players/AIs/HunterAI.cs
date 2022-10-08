@@ -5,7 +5,7 @@ namespace BattleshipEngine.Players.AIs
     /// <summary>
     /// Based on https://www.datagenetics.com/blog/december32011/
     /// </summary>
-    public class HuntAI : BaseAI
+    public class HunterAI : BaseAI
     {
         private ITargetMap _enemyMap;
         /// <summary>
@@ -22,7 +22,7 @@ namespace BattleshipEngine.Players.AIs
         private bool isTargetHorizontal;
         private List<MapCoordinates> priorities = new List<MapCoordinates>();
         
-        public HuntAI(BattleshipSession battleshipSession) : base(battleshipSession)
+        public HunterAI(BattleshipSession battleshipSession) : base(battleshipSession)
         {
         }
         

@@ -7,7 +7,7 @@ In parallel I added code tests but didn't go deep into that.
 An example Console program is included that can run the plug in. The plug in has also been tested in Unity and seems to work.
 
 ## Todo
-* Add more strategies for AI
+* Add another AI with parity https://www.datagenetics.com/blog/december32011/
 * Check multiple players
 
 ## How to use
@@ -41,14 +41,14 @@ BattleshipSession battleshipSession = new BattleshipSession(rules);
 ```
 
 ### 3. Add the players
-The game can be played with 2 players. In theory more can be added but this hasn't been tested.
+The game can be played with 2 players.
 
-Players can be either AI or Human. AI players can be given a strategy class that defines their way of play.
+Players can be either AI or Human. AI players require an AI from a selection available. Currently only 2 are available, Random and Hunter.
 
 An array with the player names will also need to be created that defines the player order.
 
 ```
-AIPlayer aiPlayer = new AIPlayer("Random Strategy", new RandomStrategy());
+var aiPlayer = new AIPlayer("Hunter AI", AIFactory.GetAI(battleshipSession, AIType.Hunter));
 HumanPlayer humanPlayer = new HumanPlayer("Konstantinos");
 
 string[] playerOrder = { aiPlayer.Name, humanPlayer.Name };
@@ -56,6 +56,16 @@ string[] playerOrder = { aiPlayer.Name, humanPlayer.Name };
 battleshipSession.SetPlayers(new[] { aiPlayer }, new[] { humanPlayer }, playerOrder);
 ```
 
+#### AI shootout!
+It's possible to let AI play the game on its own just to try it owt! Simply create two AI players and no humans.
+```
+var aiPlayer = new AIPlayer("Hunter AI", AIFactory.GetAI(battleshipSession, AIType.Hunter));
+var aiPlayer2 = new AIPlayer("Random AI", AIFactory.GetAI(battleshipSession, AIType.Random));
+
+string[] playerOrder = { aiPlayer.Name, aiPlayer2.Name };
+
+battleshipSession.SetPlayers(new[] { aiPlayer, aiPlayer2 }, Array.Empty<HumanPlayer>(), playerOrder);
+```
 
 ### 4. Set ships in human maps
 Human maps must be created and be assigned their ships. AI players will create them on their own based on their Strategy class.

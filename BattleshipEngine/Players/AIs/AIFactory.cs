@@ -9,7 +9,7 @@ namespace BattleshipEngine.Players.AIs
             return aiType switch
             {
                 AIType.Random => new RandomAI(battleshipSession),
-                AIType.Hunt => new HuntAI(battleshipSession),
+                AIType.Hunter => new HunterAI(battleshipSession),
                 _ => throw new InvalidEnumArgumentException($"{aiType} doesn't exist")
             };
         }
@@ -18,6 +18,6 @@ namespace BattleshipEngine.Players.AIs
     public enum AIType
     {
         Random,
-        Hunt,
+        Hunter,
     }
 }
