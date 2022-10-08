@@ -39,8 +39,15 @@ namespace BattleshipEngine.Maps
             _shipsWrecked = new HashSet<Ship>();
         }
 
-        private Map(Map other) : this(other._rules)
+        private Map(Map other)
         {
+            _rules = other._rules;
+            
+            _shipLocations = other._shipLocations;
+            _occupiedTiles = other._occupiedTiles;
+
+            _firedTiles = other._firedTiles;
+            _shipsWrecked = other._shipsWrecked;
         }
 
         #region ICreateMap
@@ -68,7 +75,7 @@ namespace BattleshipEngine.Maps
 
         public void PositionShip(ShipLocation shipLocation)
         {
-            Ship ship = shipLocation.Ship;
+            var ship = shipLocation.Ship;
 
             if (!_rules.ShipsInMap.Contains(ship))
                 throw new ShipNotFoundException(ship);
